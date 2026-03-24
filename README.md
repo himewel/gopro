@@ -78,8 +78,6 @@ You need an active session in the GoPro web experience (e.g. [Quik / GoPro web](
 - Tokens **expire**; if API calls start failing with 401, sign in again and repeat the steps above.
 - Treat the value like a password.
 
-**Security:** Do not commit `.env` or real tokens. The repo’s `.gitignore` should exclude `.env`.
-
 ## Usage
 
 Always use `GoProAPI` as an **async context manager** so the underlying `aiohttp` session is opened and closed correctly.
@@ -128,13 +126,6 @@ Search query parameters use Python lists where the API expects comma-separated s
 | `gopro_api/api/models.py` | Pydantic request/response models |
 | `gopro_api/config.py` | `load_dotenv`, `GP_ACCESS_TOKEN` |
 | `setup.py` | Package metadata and dependencies |
-
-## CI
-
-GitHub Actions (`.github/workflows/release.yml`):
-
-- **Push to `main`:** builds a wheel and source `.zip` and uploads them as **workflow artifacts**.
-- **Push a version tag** matching `v*` (e.g. `git tag v0.0.1 && git push origin v0.0.1`): attaches the same files to a **GitHub Release** for that tag.
 
 ## License
 
