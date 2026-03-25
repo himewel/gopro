@@ -30,11 +30,14 @@ DEFAULT_MEDIA_TYPES: List[str] = [
 
 
 class CapturedRange(BaseModel):
+    """Capture time window for media search, serialized to the API ``captured_range`` string."""
+
     start: datetime
     end: datetime
 
     @model_serializer
     def _serialize_captured_range(self) -> str:
+        """Emit the ``captured_range`` query fragment expected by the API."""
         return (
             f"{self.start.isoformat()}T00:00:00.000Z,"
             f"{self.end.isoformat()}T00:00:00.000Z"
@@ -42,6 +45,8 @@ class CapturedRange(BaseModel):
 
 
 class GoProMediaSearchParams(BaseModel):
+    """Query parameters for ``GET /media/search`` (lists become comma-separated in JSON/query)."""
+
     processing_states: List[str] = DEFAULT_PROCESSING_STATES
     fields: List[str] = DEFAULT_FIELDS
     type: List[str] = DEFAULT_MEDIA_TYPES
@@ -51,10 +56,13 @@ class GoProMediaSearchParams(BaseModel):
 
     @field_serializer("processing_states", "fields", "type")
     def _serialize_csv_lists(self, value: List[str]) -> str:
+        """Join list fields into a single comma-separated string for the query string."""
         return ",".join(value)
 
 
 class GoProMediaSearchItem(BaseModel):
+    """Single item in ``_embedded.media`` from a media search response."""
+
     model_config = ConfigDict(extra="allow")
 
     id: str
@@ -64,6 +72,8 @@ class GoProMediaSearchItem(BaseModel):
 
 
 class GoProMediaSearchEmbedded(BaseModel):
+    """``_embedded`` object on a media search response."""
+
     model_config = ConfigDict(extra="allow")
 
     media: List[GoProMediaSearchItem]
@@ -71,6 +81,8 @@ class GoProMediaSearchEmbedded(BaseModel):
 
 
 class GoProMediaSearchPages(BaseModel):
+    """Pagination block ``_pages`` on a media search response."""
+
     current_page: int
     per_page: int
     total_items: int
@@ -78,6 +90,8 @@ class GoProMediaSearchPages(BaseModel):
 
 
 class GoProMediaSearchResponse(BaseModel):
+    """Top-level JSON body from ``GET /media/search``."""
+
     model_config = ConfigDict(populate_by_name=True)
 
     embedded: GoProMediaSearchEmbedded = Field(alias="_embedded")
@@ -85,6 +99,8 @@ class GoProMediaSearchResponse(BaseModel):
 
 
 class GoProMediaDownloadFile(BaseModel):
+    """One downloadable file under ``_embedded.files`` (``GET /media/{id}/download``)."""
+
     model_config = ConfigDict(extra="allow")
 
     url: str
@@ -98,6 +114,8 @@ class GoProMediaDownloadFile(BaseModel):
 
 
 class GoProMediaDownloadVariation(BaseModel):
+    """Rendered size / quality variant in ``_embedded.variations``."""
+
     model_config = ConfigDict(extra="allow")
 
     url: str
@@ -111,6 +129,8 @@ class GoProMediaDownloadVariation(BaseModel):
 
 
 class GoProMediaDownloadSidecarFile(BaseModel):
+    """Sidecar asset (e.g. zip) in ``_embedded.sidecar_files``."""
+
     model_config = ConfigDict(extra="allow")
 
     url: str
@@ -122,6 +142,8 @@ class GoProMediaDownloadSidecarFile(BaseModel):
 
 
 class GoProMediaDownloadEmbedded(BaseModel):
+    """``_embedded`` on a media download metadata response."""
+
     model_config = ConfigDict(extra="allow")
 
     files: List[GoProMediaDownloadFile]
@@ -131,6 +153,8 @@ class GoProMediaDownloadEmbedded(BaseModel):
 
 
 class GoProMediaDownloadResponse(BaseModel):
+    """Top-level JSON body from ``GET /media/{id}/download``."""
+
     model_config = ConfigDict(populate_by_name=True)
 
     filename: str
