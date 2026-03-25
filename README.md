@@ -80,13 +80,15 @@ You need an active session in the GoPro web experience (e.g. [Quik / GoPro web](
 
 ## Usage
 
-Always use `GoProAPI` as an **async context manager** so the underlying `aiohttp` session is opened and closed correctly.
+### Async (`AsyncGoProAPI`, aiohttp)
+
+Use an **async** context manager so the `aiohttp` session is opened and closed correctly.
 
 ```python
 import asyncio
 from datetime import datetime
 
-from gopro_api.api.gopro import GoProAPI
+from gopro_api.api import AsyncGoProAPI
 from gopro_api.api.models import CapturedRange, GoProMediaSearchParams
 
 
@@ -100,7 +102,7 @@ async def main() -> None:
         page=1,
     )
 
-    async with GoProAPI() as api:
+    async with AsyncGoProAPI() as api:
         search = await api.search(params)
         for item in search.embedded.media:
             meta = await api.download(item.id)
@@ -109,6 +111,38 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
+```
+
+### Sync (`GoProAPI`, requests)
+
+Same flow with a **synchronous** context manager and `requests`:
+
+```python
+from datetime import datetime
+
+from gopro_api.api import GoProAPI
+from gopro_api.api.models import CapturedRange, GoProMediaSearchParams
+
+
+def main() -> None:
+    params = GoProMediaSearchParams(
+        captured_range=CapturedRange(
+            start=datetime.fromisoformat("2026-03-01"),
+            end=datetime.fromisoformat("2026-03-02"),
+        ),
+        per_page=50,
+        page=1,
+    )
+
+    with GoProAPI() as api:
+        search = api.search(params)
+        for item in search.embedded.media:
+            meta = api.download(item.id)
+            print(meta.filename, len(meta.embedded.files), "files")
+
+
+if __name__ == "__main__":
+    main()
 ```
 
 ### Models
@@ -122,7 +156,8 @@ Search query parameters use Python lists where the API expects comma-separated s
 
 | Path | Role |
 |------|------|
-| `gopro_api/api/gopro.py` | `GoProAPI` — `search`, `download` |
+| `gopro_api/api/async.py` | `AsyncGoProAPI` — async `search`, `download` |
+| `gopro_api/api/gopro.py` | `GoProAPI` — sync `search`, `download` |
 | `gopro_api/api/models.py` | Pydantic request/response models |
 | `gopro_api/config.py` | `load_dotenv`, `GP_ACCESS_TOKEN` |
 | `setup.py` | Package metadata and dependencies |

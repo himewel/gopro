@@ -7,7 +7,7 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 setuptools.setup(
     name="gopro-api",
-    version="0.0.2",
+    version="0.0.3",
     author="himewel",
     author_email="welberthime@gmail.com",
     description=(

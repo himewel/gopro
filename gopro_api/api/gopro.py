@@ -1,14 +1,20 @@
-import aiohttp
+import requests
 
 from gopro_api.config import GP_ACCESS_TOKEN
-from gopro_api.api.models import GoProMediaSearchParams, GoProMediaDownloadResponse, GoProMediaSearchResponse
+from gopro_api.api.models import (
+    GoProMediaDownloadResponse,
+    GoProMediaSearchParams,
+    GoProMediaSearchResponse,
+)
 
 
 class GoProAPI:
+    """Synchronous GoPro cloud API client (``requests``)."""
+
     def __init__(self, access_token: str | None = None, timeout: float = 10.0) -> None:
         self.access_token = access_token or GP_ACCESS_TOKEN
-        self._timeout = aiohttp.ClientTimeout(total=timeout)
-        self._session: aiohttp.ClientSession | None = None
+        self._timeout = timeout
+        self._session: requests.Session | None = None
 
     @property
     def base_url(self) -> str:
@@ -20,42 +26,42 @@ class GoProAPI:
             "Accept": accept,
         }
 
-    async def __aenter__(self) -> "GoProAPI":
-        self._session = aiohttp.ClientSession(
-            base_url=self.base_url,
-            timeout=self._timeout,
-        )
+    def __enter__(self) -> "GoProAPI":
+        self._session = requests.Session()
         return self
 
-    async def __aexit__(self, *exc: object) -> None:
+    def __exit__(self, *exc: object) -> None:
         if self._session is not None:
-            await self._session.close()
+            self._session.close()
             self._session = None
 
-    def _session_or_raise(self) -> aiohttp.ClientSession:
+    def _session_or_raise(self) -> requests.Session:
         if self._session is None:
-            msg = "Use GoProAPI as an async context manager: async with GoProAPI() as api: ..."
+            msg = "Use GoProAPI as a context manager: with GoProAPI() as api: ..."
             raise RuntimeError(msg)
         return self._session
 
-    async def download(self, media_id: str) -> GoProMediaDownloadResponse:
+    def download(self, media_id: str) -> GoProMediaDownloadResponse:
         headers = self.get_headers("application/vnd.gopro.jk.media+json; version=2.0.0")
         session = self._session_or_raise()
-        async with session.get(f"/media/{media_id}/download", headers=headers) as response:
-            response.raise_for_status()
-            body = await response.text()
-        return GoProMediaDownloadResponse.model_validate_json(body)
+        response = session.get(
+            f"{self.base_url}/media/{media_id}/download",
+            headers=headers,
+            timeout=self._timeout,
+        )
+        response.raise_for_status()
+        return GoProMediaDownloadResponse.model_validate_json(response.text)
 
-    async def search(self, params: GoProMediaSearchParams) -> GoProMediaSearchResponse:
+    def search(self, params: GoProMediaSearchParams) -> GoProMediaSearchResponse:
         headers = self.get_headers(
             "application/vnd.gopro.jk.media.search+json; version=2.0.0",
         )
         session = self._session_or_raise()
-        async with session.get(
-            "/media/search",
+        response = session.get(
+            f"{self.base_url}/media/search",
             headers=headers,
             params=params.model_dump(),
-        ) as response:
-            response.raise_for_status()
-            body = await response.text()
-        return GoProMediaSearchResponse.model_validate_json(body)
+            timeout=self._timeout,
+        )
+        response.raise_for_status()
+        return GoProMediaSearchResponse.model_validate_json(response.text)
