@@ -7,7 +7,7 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 setuptools.setup(
     name="gopro-api",
-    version="0.0.3",
+    version="0.0.4",
     author="himewel",
     author_email="welberthime@gmail.com",
     description=(
@@ -39,6 +39,11 @@ setuptools.setup(
     ],
     keywords="gopro quik cloud api async aiohttp media gopro-api",
     packages=setuptools.find_packages(),
+    entry_points={
+        "console_scripts": [
+            "gopro-api=gopro_api.cli:main",
+        ],
+    },
     python_requires=">=3.10",
     install_requires=[
         "aiohttp~=3.11.14",

@@ -34,6 +34,26 @@ pip install gopro-api
 
 Import the library as **`gopro_api`** (underscore).
 
+## CLI
+
+After install, the **`gopro-api`** command is on your `PATH`:
+
+```bash
+gopro-api --help
+gopro-api search --start 2026-03-01 --end 2026-03-03 --per-page 30
+gopro-api search --start 2026-03-01 --end 2026-03-03 --all-pages --json
+gopro-api download-info MEDIA_ID
+gopro-api download-info MEDIA_ID --json
+```
+
+Global options: `--timeout` (seconds), `--version`. The CLI uses the sync client and **`GP_ACCESS_TOKEN`** the same way as the library.
+
+You can also run without installing a script:
+
+```bash
+python -m gopro_api.cli search --start 2026-03-01 --end 2026-03-02
+```
+
 ## Configuration
 
 The client reads `GP_ACCESS_TOKEN` from the environment (after loading `.env` if present).
@@ -160,6 +180,7 @@ Search query parameters use Python lists where the API expects comma-separated s
 | `gopro_api/api/gopro.py` | `GoProAPI` — sync `search`, `download` |
 | `gopro_api/api/models.py` | Pydantic request/response models |
 | `gopro_api/config.py` | `load_dotenv`, `GP_ACCESS_TOKEN` |
+| `gopro_api/cli.py` | `gopro-api` command-line interface |
 | `setup.py` | Package metadata and dependencies |
 
 ## License
