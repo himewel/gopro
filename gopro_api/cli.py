@@ -1,11 +1,13 @@
 """Command-line interface for gopro-api."""
 
 from __future__ import annotations
-
 import argparse
-import json
-import sys
 from datetime import datetime
+import json
+import os
+import sys
+
+import requests
 
 from gopro_api.api import GoProAPI
 from gopro_api.api.models import CapturedRange, GoProMediaSearchParams
@@ -87,8 +89,36 @@ def _cmd_download_info(args: argparse.Namespace) -> None:
         print(json.dumps(r.model_dump(by_alias=True, mode="json"), indent=2))
     else:
         print(r.filename)
-        for f in r.embedded.files:
-            print(f"  {f.item_number:>3}  {f.width}x{f.height}  {f.url}")
+
+        if ".MP4" in r.filename:
+            media_list = r.embedded.variations
+        else:
+            media_list = r.embedded.files
+
+        for idx, f in enumerate(media_list):
+            print(f"  {idx:>3}  {f.width}x{f.height}  {f.url}")
+
+
+def _cmd_download_file(args: argparse.Namespace) -> None:
+    _require_token()
+    with GoProAPI(timeout=args.timeout) as api:
+        r = api.download(args.media_id)
+
+        if ".MP4" in r.filename:
+            media_list = [max(r.embedded.variations, key=lambda x: x.height)]
+        else:
+            media_list = r.embedded.files
+
+        for idx, file in enumerate(media_list):
+            os.makedirs(args.destination, exist_ok=True)
+            media_name = r.filename.split(".")[0]
+            media_type = r.filename.split(".")[-1]
+            item_number = str(idx).zfill(3)
+            media_file_name = f"{media_name}{item_number}.{media_type}"
+            with open(f"{args.destination}/{media_file_name}", "wb") as f:
+                response = requests.get(file.url)
+                response.raise_for_status()
+                f.write(response.content)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -121,7 +151,9 @@ def main(argv: list[str] | None = None) -> None:
         required=True,
         help="Range end: YYYY-MM-DD or ISO datetime (API treats range as in query string)",
     )
-    p_search.add_argument("--page", type=int, default=1, help="Page number (default: 1)")
+    p_search.add_argument(
+        "--page", type=int, default=1, help="Page number (default: 1)"
+    )
     p_search.add_argument(
         "--per-page",
         type=int,
@@ -142,7 +174,7 @@ def main(argv: list[str] | None = None) -> None:
     p_search.set_defaults(func=_cmd_search)
 
     p_info = sub.add_parser(
-        "download-info",
+        "info",
         help="Show download metadata (URLs, sizes) for one media id",
     )
     p_info.add_argument("media_id", help="Media id from search")
@@ -152,6 +184,14 @@ def main(argv: list[str] | None = None) -> None:
         help="Print full API JSON",
     )
     p_info.set_defaults(func=_cmd_download_info)
+
+    p_download = sub.add_parser(
+        "pull",
+        help="Download files from a media id",
+    )
+    p_download.add_argument("media_id", help="Media id from search")
+    p_download.add_argument("destination", help="Path to save the file")
+    p_download.set_defaults(func=_cmd_download_file)
 
     args = parser.parse_args(argv)
     args.func(args)

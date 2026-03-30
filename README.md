@@ -1,17 +1,25 @@
 # gopro-api
 
-Small Python client for the **GoPro cloud / Quik** media API (`api.gopro.com`): search your library and fetch download metadata, using **async I/O** (`aiohttp`) and **Pydantic** models.
+Unofficial Python client for the **GoPro cloud / Quik** HTTP API at [`api.gopro.com`](https://api.gopro.com): **search** your library and **fetch download metadata** (CDN URLs, filenames, variants). Built with **Pydantic** models, plus **sync** (`requests`) and **async** (`aiohttp`) clients and a small **`gopro-api`** CLI.
 
-This is an unofficial project; it is not affiliated with GoPro.
+This project is not affiliated with or endorsed by GoPro.
+
+## Features
+
+- **`GoProAPI`** — synchronous client (`requests`), `with` context manager  
+- **`AsyncGoProAPI`** — async client (`aiohttp`), `async with` context manager  
+- **Pydantic** request/response types in `gopro_api.api.models`  
+- **CLI** — `gopro-api search`, `gopro-api info`, `gopro-api pull`  
+- **`GP_ACCESS_TOKEN`** from environment / `.env` (browser cookie value)
 
 ## Requirements
 
-- Python 3.10+
-- A valid **GoPro access token** (see [Configuration](#configuration))
+- Python **3.10+**
+- **`GP_ACCESS_TOKEN`** — see [Configuration](#configuration)
 
 ## Install
 
-From the repository root (editable install for development):
+From the repository root:
 
 ```bash
 python -m venv .venv
@@ -20,89 +28,94 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-Or install from a built wheel once you have one:
+From a local wheel (name matches your build):
 
 ```bash
-pip install ./dist/gopro_api-0.0.1-py3-none-any.whl
+pip install ./dist/gopro_api-*-py3-none-any.whl
 ```
 
-Published installs use the distribution name **`gopro-api`**:
+Published package on PyPI (distribution name **`gopro-api`**, import **`gopro_api`**):
 
 ```bash
 pip install gopro-api
 ```
 
-Import the library as **`gopro_api`** (underscore).
-
 ## CLI
 
-After install, the **`gopro-api`** command is on your `PATH`:
+After install, **`gopro-api`** is on your `PATH`:
 
 ```bash
 gopro-api --help
+gopro-api --version
 gopro-api search --start 2026-03-01 --end 2026-03-03 --per-page 30
-gopro-api search --start 2026-03-01 --end 2026-03-03 --all-pages --json
-gopro-api download-info MEDIA_ID
-gopro-api download-info MEDIA_ID --json
+gopro-api search --start 2026-03-01 --end 2026-03-03 --all-pages
+gopro-api search --start 2026-03-01 --end 2026-03-03 --json
+gopro-api info MEDIA_ID
+gopro-api info MEDIA_ID --json
+gopro-api pull MEDIA_ID ./downloads
 ```
 
-Global options: `--timeout` (seconds), `--version`. The CLI uses the sync client and **`GP_ACCESS_TOKEN`** the same way as the library.
+| Command | Purpose |
+|--------|---------|
+| **`search`** | List media in a capture range. Default: one **id** per line. **`--json`**: full API-shaped response; with **`--all-pages`**, a JSON array of every page. |
+| **`info`** | Show download metadata for one media id (filename + file lines with size and URL), or **`--json`** for the full payload. |
+| **`pull`** | Download asset(s) for a media id into **`destination`** (directory; created if missing). Videos (`.MP4` in filename): picks the **tallest** `variations` entry. Photos: uses **`files`** (one request per file). |
 
-You can also run without installing a script:
+Global **`--timeout`** (seconds, default **`60`**) applies to API calls; **`pull`** uses a separate `requests.get` for CDN URLs without that timeout today.
+
+Run without an installed script:
 
 ```bash
 python -m gopro_api.cli search --start 2026-03-01 --end 2026-03-02
+python -m gopro_api.cli info MEDIA_ID
+python -m gopro_api.cli pull MEDIA_ID ./out
 ```
 
 ## Configuration
 
-The client reads `GP_ACCESS_TOKEN` from the environment (after loading `.env` if present).
+`gopro_api.config` loads **`.env`** from the current working directory and reads **`GP_ACCESS_TOKEN`**.
 
-Create a `.env` file in the project root:
+Example `.env`:
 
 ```env
 GP_ACCESS_TOKEN=your_token_here
 ```
 
-The HTTP client sends it as a cookie: `gp_access_token=<value>`.
+The clients send it as a cookie: `gp_access_token=<value>`. Put **only the token string** in `GP_ACCESS_TOKEN` (not the `gp_access_token=` prefix).
 
-Put **only the token string** in `GP_ACCESS_TOKEN` (not the `gp_access_token=` prefix).
+You can override the token in code: `GoProAPI(access_token="...")` or `AsyncGoProAPI(access_token="...")`.
 
 ### Retrieving `gp_access_token` from your browser
 
-You need an active session in the GoPro web experience (e.g. [Quik / GoPro web](https://gopro.com) — sign in and open your media library). The site stores the API token in a cookie named **`gp_access_token`**.
+Sign in to the GoPro web app (e.g. [gopro.com](https://gopro.com) media / Quik). The site sets a cookie **`gp_access_token`**.
 
 **Chrome / Edge / Brave**
 
-1. Open the GoPro site while logged in (same browser profile you use for the cloud library).
-2. Press **F12** (or **Ctrl+Shift+I** / **Cmd+Option+I**) to open DevTools.
-3. Open the **Application** tab → **Storage** → **Cookies** → select the site origin (often `https://quik.gopro.com` or another `*.gopro.com` host).
-4. Find the row **`gp_access_token`**, copy the **Value** column only.
+1. Open the site while logged in.  
+2. **F12** → **Application** → **Cookies** → choose the origin (often `https://quik.gopro.com` or another `*.gopro.com` host).  
+3. Copy the **Value** of **`gp_access_token`**.
 
 **Firefox**
 
-1. Open DevTools (**F12**) → **Storage** tab → **Cookies** → pick the relevant `gopro.com` origin.
-2. Copy the value of **`gp_access_token`**.
+**F12** → **Storage** → **Cookies** → same idea.
 
-**Using the Network panel (any Chromium-based browser)**
+**Network panel (Chromium)**
 
-1. DevTools → **Network** tab; enable **Preserve log** if useful.
-2. Reload or navigate in the library so requests to **`api.gopro.com`** appear.
-3. Click a request to `api.gopro.com` → **Headers** → **Request Headers** → **Cookie**.
-4. Locate `gp_access_token=...` in that string and copy everything **after** the first `=` up to the next `;` (or end of string).  
-   - If the value is long or URL-encoded, copy carefully so you do not include a trailing semicolon or another cookie name.
+1. **Network** → trigger requests to **`api.gopro.com`**.  
+2. Pick a request → **Headers** → **Cookie**.  
+3. Copy the value after `gp_access_token=` up to the next `;` (or end of string).
 
 **Notes**
 
-- Cookies are **HttpOnly** on some setups; if you do not see `gp_access_token` in Application/Storage, use the **Network** method on a request that already hit `api.gopro.com`.
-- Tokens **expire**; if API calls start failing with 401, sign in again and repeat the steps above.
-- Treat the value like a password.
+- If the cookie is **HttpOnly**, use the **Network** method.  
+- Tokens **expire**; refresh from the browser if you get **401**.  
+- Treat the token like a password.
 
-## Usage
+**Security:** Do not commit `.env` or tokens. Keep `.env` in `.gitignore`.
 
-### Async (`AsyncGoProAPI`, aiohttp)
+## Library usage
 
-Use an **async** context manager so the `aiohttp` session is opened and closed correctly.
+### Async (`AsyncGoProAPI`)
 
 ```python
 import asyncio
@@ -133,9 +146,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### Sync (`GoProAPI`, requests)
-
-Same flow with a **synchronous** context manager and `requests`:
+### Sync (`GoProAPI`)
 
 ```python
 from datetime import datetime
@@ -167,24 +178,32 @@ if __name__ == "__main__":
 
 ### Models
 
-- **Requests:** `GoProMediaSearchParams`, `CapturedRange`, and related defaults live in `gopro_api.api.models`.
-- **Responses:** Parsed JSON types (search hits, download URLs, pagination) are defined in the same module.
+- **Requests:** `GoProMediaSearchParams`, `CapturedRange`, etc. in **`gopro_api.api.models`**.  
+- **Responses:** search and download JSON shapes (including `_embedded` / `_pages` aliases).
 
-Search query parameters use Python lists where the API expects comma-separated strings; serialization is handled when calling `model_dump()`.
+List fields in search params are serialized to comma-separated strings when you call **`model_dump()`** (used by the HTTP clients).
 
 ## Project layout
 
 | Path | Role |
 |------|------|
-| `gopro_api/api/async.py` | `AsyncGoProAPI` — async `search`, `download` |
 | `gopro_api/api/gopro.py` | `GoProAPI` — sync `search`, `download` |
+| `gopro_api/api/async_gopro.py` | `AsyncGoProAPI` — async `search`, `download` |
 | `gopro_api/api/models.py` | Pydantic request/response models |
+| `gopro_api/api/__init__.py` | Re-exports `GoProAPI`, `AsyncGoProAPI` |
 | `gopro_api/config.py` | `load_dotenv`, `GP_ACCESS_TOKEN` |
-| `gopro_api/cli.py` | `gopro-api` command-line interface |
-| `setup.py` | Package metadata and dependencies |
+| `gopro_api/cli.py` | `gopro-api` CLI |
+| `setup.py` | Package metadata, dependencies, console entry point |
+
+## CI and releases
+
+[`.github/workflows/release.yml`](.github/workflows/release.yml):
+
+- **Push to `main`** — builds wheel + source `.zip`, uploads **workflow artifacts**.  
+- **Push tag `v*`** (e.g. `v0.0.5`) — attaches the same files to a **GitHub Release**.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT License](LICENSE).
 
-GoPro, Quik, and related marks are trademarks of their respective owners. This software is not affiliated with or endorsed by GoPro.
+GoPro, Quik, and related marks are trademarks of their respective owners.

@@ -7,12 +7,12 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 setuptools.setup(
     name="gopro-api",
-    version="0.0.4",
+    version="0.0.5",
     author="himewel",
     author_email="welberthime@gmail.com",
     description=(
-        "Unofficial async Python client for the GoPro cloud media API "
-        "(api.gopro.com), using aiohttp and Pydantic."
+        "Unofficial Python client for the GoPro cloud API (api.gopro.com): "
+        "sync and async clients, Pydantic models, and a CLI."
     ),
     long_description=README,
     long_description_content_type="text/markdown",
