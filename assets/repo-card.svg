@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="gopro-api repository card">
+  <defs>
+    <linearGradient id="card-bg" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#030304"/>
+      <stop offset="0.55" stop-color="#0c0c0e"/>
+      <stop offset="1" stop-color="#111116"/>
+    </linearGradient>
+    <linearGradient id="card-vignette" x1="640" y1="0" x2="640" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0ea5e9" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#0ea5e9" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="card-logo-tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050505"/>
+      <stop offset="1" stop-color="#141414"/>
+    </linearGradient>
+    <linearGradient id="card-logo-lens" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#404040"/>
+      <stop offset="1" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <pattern id="card-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#ffffff" stroke-opacity="0.04" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="640" fill="url(#card-bg)"/>
+  <rect width="1280" height="640" fill="url(#card-grid)"/>
+  <rect width="1280" height="220" fill="url(#card-vignette)"/>
+
+  <g transform="translate(200 322) scale(2.35) translate(-64 -64)">
+    <rect x="8" y="8" width="112" height="112" rx="26" fill="url(#card-logo-tile)"/>
+    <g transform="translate(64 64)">
+      <rect x="-38" y="-18" width="76" height="36" rx="8" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+      <circle cx="-18" cy="0" r="16" fill="#262626" stroke="#3d3d3d" stroke-width="1.5"/>
+      <circle cx="-18" cy="0" r="11" fill="url(#card-logo-lens)"/>
+      <circle cx="-21" cy="-3" r="4" fill="#525252" opacity="0.5"/>
+      <rect x="14" y="-10" width="20" height="10" rx="2" fill="#252525" stroke="#333333" stroke-width="1"/>
+      <circle cx="24" cy="-5" r="2.5" fill="#0ea5e9" opacity="0.9"/>
+    </g>
+    <rect x="36" y="98" width="56" height="3" rx="1.5" fill="#0ea5e9" opacity="0.85"/>
+  </g>
+
+  <text x="440" y="268" fill="#f8fafc" font-family="system-ui, Segoe UI, Helvetica, Arial, sans-serif" font-size="64" font-weight="bold">gopro-api</text>
+  <rect x="440" y="284" width="120" height="5" rx="2" fill="#0ea5e9" opacity="0.9"/>
+
+  <text x="440" y="340" fill="#94a3b8" font-family="system-ui, Segoe UI, Helvetica, Arial, sans-serif" font-size="28">Python client / Quik cloud API / CLI</text>
+
+  <text x="440" y="388" fill="#64748b" font-family="ui-monospace, Consolas, monospace" font-size="18">pip install git+https://github.com/himewel/gopro-api.git</text>
+
+  <text x="440" y="458" fill="#475569" font-family="system-ui, Segoe UI, Helvetica, Arial, sans-serif" font-size="18">Unofficial project - not affiliated with GoPro.</text>
+
+  <text x="1264" y="610" fill="#334155" font-family="ui-monospace, Consolas, monospace" font-size="16" text-anchor="end">github.com/himewel/gopro-api</text>
+</svg>

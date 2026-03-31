@@ -1,5 +1,9 @@
 # gopro-api
 
+<p align="center">
+  <img src="assets/repo-card.svg" width="1280" height="640" alt="gopro-api social"/>
+</p>
+
 Unofficial Python client for the **GoPro cloud / Quik** HTTP API at [`api.gopro.com`](https://api.gopro.com): **search** your library and **fetch download metadata** (CDN URLs, filenames, variants). Built with **Pydantic** models, plus **sync** (`requests`) and **async** (`aiohttp`) clients and a small **`gopro-api`** CLI.
 
 This project is not affiliated with or endorsed by GoPro.
@@ -34,11 +38,13 @@ From a local wheel (name matches your build):
 pip install ./dist/gopro_api-*-py3-none-any.whl
 ```
 
-Published package on PyPI (distribution name **`gopro-api`**, import **`gopro_api`**):
+**From GitHub** (not on PyPI yet; needs **Git** on your machine):
 
 ```bash
-pip install gopro-api
+pip install git+https://github.com/himewel/gopro-api.git
 ```
+
+After any install, import the library as **`gopro_api`** and run the **`gopro-api`** CLI if entry points were installed.
 
 ## CLI
 
@@ -194,13 +200,6 @@ List fields in search params are serialized to comma-separated strings when you 
 | `gopro_api/config.py` | `load_dotenv`, `GP_ACCESS_TOKEN` |
 | `gopro_api/cli.py` | `gopro-api` CLI |
 | `setup.py` | Package metadata, dependencies, console entry point |
-
-## CI and releases
-
-[`.github/workflows/release.yml`](.github/workflows/release.yml):
-
-- **Push to `main`** — builds wheel + source `.zip`, uploads **workflow artifacts**.  
-- **Push tag `v*`** (e.g. `v0.0.5`) — attaches the same files to a **GitHub Release**.
 
 ## License
 
