@@ -53,15 +53,17 @@ gopro-api search --start 2026-03-01 --end 2026-03-03 --json
 gopro-api info MEDIA_ID
 gopro-api info MEDIA_ID --json
 gopro-api pull MEDIA_ID ./downloads
+gopro-api pull MEDIA_ID ./downloads --height 1080
+gopro-api pull MEDIA_ID ./downloads --width 1920 --height 1080
 ```
 
 | Command | Purpose |
 |--------|---------|
 | **`search`** | List media in a capture range. Default: one **id** per line. **`--json`**: full API-shaped response; with **`--all-pages`**, a JSON array of every page. |
 | **`info`** | Show download metadata for one media id (filename + file lines with size and URL), or **`--json`** for the full payload. |
-| **`pull`** | Download asset(s) for a media id into **`destination`** (directory; created if missing). Videos (`.MP4` in filename): picks the **tallest** `variations` entry. Photos: uses **`files`** (one request per file). |
+| **`pull`** | Download asset(s) for a media id into **`destination`** (directory; created if missing). Videos (`.mp4` extension, case-insensitive): one **`variations`** entry — **tallest** by default, or closest to **`--height`** / **`--width`** (sum of squared pixel deltas; ties broken by larger resolution). Photos: uses **`files`** (one request per file). |
 
-Global **`--timeout`** (seconds, default **`60`**) applies to API calls; **`pull`** uses a separate `requests.get` for CDN URLs without that timeout today.
+Global **`--timeout`** (seconds, default **`60`**) applies to API calls and to **`pull`** CDN downloads (`requests.get`).
 
 Run without an installed script:
 
@@ -69,6 +71,7 @@ Run without an installed script:
 python -m gopro_api.cli search --start 2026-03-01 --end 2026-03-02
 python -m gopro_api.cli info MEDIA_ID
 python -m gopro_api.cli pull MEDIA_ID ./out
+python -m gopro_api.cli pull MEDIA_ID ./out --height 720
 ```
 
 ## Configuration
