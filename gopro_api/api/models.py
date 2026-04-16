@@ -1,3 +1,5 @@
+"""Pydantic models for GoPro cloud media search and download JSON."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -30,7 +32,7 @@ DEFAULT_MEDIA_TYPES: List[str] = [
 
 
 class CapturedRange(BaseModel):
-    """Capture time window for media search, serialized to the API ``captured_range`` string."""
+    """Capture window for search; serialized to the API ``captured_range`` string."""
 
     start: datetime
     end: datetime
@@ -45,18 +47,21 @@ class CapturedRange(BaseModel):
 
 
 class GoProMediaSearchParams(BaseModel):
-    """Query parameters for ``GET /media/search`` (lists become comma-separated in JSON/query)."""
+    """Query parameters for ``GET /media/search`` (lists as comma-separated values)."""
 
     processing_states: List[str] = DEFAULT_PROCESSING_STATES
     fields: List[str] = DEFAULT_FIELDS
     type: List[str] = DEFAULT_MEDIA_TYPES
-    captured_range: CapturedRange = CapturedRange(start=datetime.min, end=datetime.max)
+    captured_range: CapturedRange = CapturedRange(
+        start=datetime.min,
+        end=datetime.max,
+    )
     page: int = 1
     per_page: int = 1
 
     @field_serializer("processing_states", "fields", "type")
     def _serialize_csv_lists(self, value: List[str]) -> str:
-        """Join list fields into a single comma-separated string for the query string."""
+        """Join list fields into one comma-separated string for the query."""
         return ",".join(value)
 
 
@@ -99,7 +104,7 @@ class GoProMediaSearchResponse(BaseModel):
 
 
 class GoProMediaDownloadFile(BaseModel):
-    """One downloadable file under ``_embedded.files`` (``GET /media/{id}/download``)."""
+    """One downloadable file under ``_embedded.files`` from download metadata."""
 
     model_config = ConfigDict(extra="allow")
 

@@ -1,3 +1,5 @@
+"""Synchronous GoPro cloud API client (``requests``)."""
+
 import requests
 
 from gopro_api.config import GP_ACCESS_TOKEN
@@ -17,7 +19,11 @@ class GoProAPI:
     """
 
     def __init__(self, access_token: str | None = None, timeout: float = 10.0) -> None:
-        """``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``. ``timeout``: per-request seconds."""
+        """Create a sync client.
+
+        ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.
+        ``timeout``: per-request timeout in seconds.
+        """
         self.access_token = access_token or GP_ACCESS_TOKEN
         self._timeout = timeout
         self._session: requests.Session | None = None

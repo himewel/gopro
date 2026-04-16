@@ -1,3 +1,5 @@
+"""Asynchronous GoPro cloud API client (``aiohttp``)."""
+
 import aiohttp
 
 from gopro_api.config import GP_ACCESS_TOKEN
@@ -17,7 +19,11 @@ class AsyncGoProAPI:
     """
 
     def __init__(self, access_token: str | None = None, timeout: float = 10.0) -> None:
-        """``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``. ``timeout``: HTTP client total timeout (seconds)."""
+        """Create an async client.
+
+        ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.
+        ``timeout``: total HTTP client timeout in seconds.
+        """
         self.access_token = access_token or GP_ACCESS_TOKEN
         self._timeout = aiohttp.ClientTimeout(total=timeout)
         self._session: aiohttp.ClientSession | None = None
@@ -35,7 +41,7 @@ class AsyncGoProAPI:
         }
 
     async def __aenter__(self) -> "AsyncGoProAPI":
-        """Open an ``aiohttp.ClientSession`` for the duration of the ``async with`` block."""
+        """Open an ``aiohttp.ClientSession`` for the ``async with`` body."""
         self._session = aiohttp.ClientSession(
             base_url=self.base_url,
             timeout=self._timeout,
@@ -49,14 +55,15 @@ class AsyncGoProAPI:
             self._session = None
 
     def _session_or_raise(self) -> aiohttp.ClientSession:
-        """Return the active session or raise if used outside an async context manager."""
-        if self._session is None:
+        """Return the active session or raise if not inside ``async with``."""
+        session = self._session
+        if session is None:
             msg = (
                 "Use AsyncGoProAPI as an async context manager: "
                 "async with AsyncGoProAPI() as api: ..."
             )
             raise RuntimeError(msg)
-        return self._session
+        return session
 
     async def download(self, media_id: str) -> GoProMediaDownloadResponse:
         """``GET /media/{media_id}/download`` — metadata and CDN URLs for files."""

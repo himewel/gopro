@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+# Add "py312" when using Black >= 24.
+target-version = ["py310", "py311"]
+include = "\\.pyi?$"
+extend-exclude = """
+/(
+  \\.eggs
+  | \\.git
+  | \\.hg
+  | \\.mypy_cache
+  | \\.ruff_cache
+  | \\.tox
+  | \\.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+"""
+
+[tool.pylint.main]
+py-version = "3.10"
+jobs = 0
+# Ensure repo root is on sys.path so ``import gopro_api`` resolves when linting.
+init-hook = "import sys; sys.path.insert(0, '.')"
+ignore-paths = [
+    ".venv/.*",
+    "venv/.*",
+    "build/.*",
+    "dist/.*",
+]
+
+[tool.pylint.format]
+max-line-length = 88
+indent-string = "    "
+
+[tool.pylint."messages control"]
+enable = [
+    "useless-suppression",
+]
+# aiohttp ``ClientSession.get`` triggers false positives across Pylint versions.
+disable = [
+    "not-async-context-manager",
+]
+
+[tool.pylint.design]
+max-args = 7
+max-attributes = 11
