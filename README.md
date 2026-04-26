@@ -59,7 +59,7 @@ gopro-api pull MEDIA_ID ./downloads --width 1920 --height 1080
 
 | Command | Purpose |
 |--------|---------|
-| **`search`** | List media in a capture range. Default: one **id** per line. **`--json`**: full API-shaped response; with **`--all-pages`**, a JSON array of every page. |
+| **`search`** | List media in a capture range. Default: a **`# _pages`** summary line, a tab-separated header (`id`, `type`, `captured_at`, `filename`, …; not `gopro_user_id` / `source_gumi` / `source_mgumi`), then one row per item (other API fields in an **`extra`** JSON column). **`--json`**: full API-shaped response; with **`--all-pages`**, a JSON array of every page. |
 | **`info`** | Show download metadata for one media id (filename + file lines with size and URL), or **`--json`** for the full payload. |
 | **`pull`** | Download asset(s) for a media id into **`destination`** (directory; created if missing). Videos (`.mp4` extension, case-insensitive): one **`variations`** entry — **tallest** by default, or closest to **`--height`** / **`--width`** (sum of squared pixel deltas; ties broken by larger resolution). Photos: uses **`files`** (one request per file). |
 
@@ -76,7 +76,7 @@ python -m gopro_api.cli pull MEDIA_ID ./out --height 720
 
 ## Configuration
 
-`gopro_api.config` loads **`.env`** from the current working directory and reads **`GP_ACCESS_TOKEN`**.
+`gopro_api.config` reads settings from the environment and from a `.env` file in the current working directory via **pydantic-settings**. The only required setting is **`GP_ACCESS_TOKEN`**.
 
 Example `.env`:
 
@@ -194,7 +194,7 @@ List fields in search params are serialized to comma-separated strings when you 
 | `gopro_api/api/async_gopro.py` | `AsyncGoProAPI` — async `search`, `download` |
 | `gopro_api/api/models.py` | Pydantic request/response models |
 | `gopro_api/api/__init__.py` | Re-exports `GoProAPI`, `AsyncGoProAPI` |
-| `gopro_api/config.py` | `load_dotenv`, `GP_ACCESS_TOKEN` |
+| `gopro_api/config.py` | pydantic-settings `Settings`, `GP_ACCESS_TOKEN` |
 | `gopro_api/cli.py` | `gopro-api` CLI |
 | `setup.py` | Package metadata, dependencies, console entry point |
 

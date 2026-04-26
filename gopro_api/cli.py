@@ -3,23 +3,25 @@
 from __future__ import annotations
 
 import argparse
-from abc import ABC, abstractmethod
-from collections.abc import Sequence
-from datetime import datetime
+import asyncio
 import json
 import os
 import sys
+from abc import ABC, abstractmethod
+from collections.abc import Sequence
+from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
 
-import requests
-
-from gopro_api.api import GoProAPI
 from gopro_api.api.models import (
     CapturedRange,
-    GoProMediaDownloadVariation,
+    GoProMediaSearchItem,
     GoProMediaSearchParams,
+    GoProMediaSearchResponse,
 )
+from gopro_api.client import AsyncGoProClient
 from gopro_api.config import GP_ACCESS_TOKEN
+from gopro_api.exceptions import NoVariationsError
+from gopro_api.utils import is_video_filename, pull_assets_for_response
 
 
 def _version() -> str:
@@ -37,41 +39,11 @@ def _parse_dt(raw: str) -> datetime:
     return datetime.fromisoformat(raw.replace("Z", "+00:00"))
 
 
-def _is_video_filename(filename: str) -> bool:
-    base = filename.rsplit(".", 1)
-    return len(base) == 2 and base[1].lower() == "mp4"
-
-
 def _positive_int(raw: str) -> int:
     value = int(raw)
     if value <= 0:
         raise argparse.ArgumentTypeError("must be a positive integer")
     return value
-
-
-def _select_video_variation(
-    variations: list[GoProMediaDownloadVariation],
-    *,
-    target_height: int | None,
-    target_width: int | None,
-) -> GoProMediaDownloadVariation:
-    """Pick one variation: closest to target size, or tallest when no target."""
-    if not variations:
-        sys.stderr.write("error: API returned no video variations for this media id.\n")
-        raise SystemExit(2)
-    if target_height is None and target_width is None:
-        return max(variations, key=lambda var: var.height)
-
-    def score(variation: GoProMediaDownloadVariation) -> int:
-        delta_h = (
-            0 if target_height is None else (variation.height - target_height) ** 2
-        )
-        delta_w = 0 if target_width is None else (variation.width - target_width) ** 2
-        return delta_h + delta_w
-
-    best = min(score(variation) for variation in variations)
-    tied = [variation for variation in variations if score(variation) == best]
-    return max(tied, key=lambda var: (var.height, var.width))
 
 
 def _require_token() -> None:
@@ -83,8 +55,71 @@ def _require_token() -> None:
         raise SystemExit(2)
 
 
+# Column order for plain-text ``search`` output (subset of ``GoProMediaSearchItem``).
+_SEARCH_ITEM_COLUMNS: tuple[str, ...] = (
+    "id",
+    "type",
+    "captured_at",
+    "filename",
+    "file_extension",
+    "file_size",
+    "item_count",
+    "width",
+    "height",
+)
+
+
+def _search_item_extras(item: GoProMediaSearchItem) -> dict[str, object]:
+    """Return API-only fields not shown as dedicated columns (e.g. capturedate)."""
+    row = item.model_dump(mode="json")
+    hidden = frozenset(
+        {
+            *_SEARCH_ITEM_COLUMNS,
+            "gopro_user_id",
+            "source_gumi",
+            "source_mgumi",
+        },
+    )
+    return {k: v for k, v in row.items() if k not in hidden}
+
+
+def _print_search_plain_header() -> None:
+    cols = list(_SEARCH_ITEM_COLUMNS) + ["extra"]
+    print("\t".join(cols))
+
+
+def _format_search_item_plain(item: GoProMediaSearchItem) -> str:
+    row = item.model_dump(mode="json")
+    cells = ["" if row.get(c) is None else str(row[c]) for c in _SEARCH_ITEM_COLUMNS]
+    extra = _search_item_extras(item)
+    cells.append("" if not extra else json.dumps(extra, ensure_ascii=False, separators=(",", ":")))
+    return "\t".join(cells)
+
+
+def _print_search_plain_page(
+    page_result: GoProMediaSearchResponse,
+    *,
+    print_header: bool = True,
+) -> None:
+    p = page_result.pages
+    print(
+        f"# _pages: current_page={p.current_page} per_page={p.per_page} "
+        f"total_items={p.total_items} total_pages={p.total_pages}",
+    )
+    if page_result.embedded.errors:
+        for err in page_result.embedded.errors:
+            print(
+                f"# _embedded.errors: {json.dumps(err, ensure_ascii=False)}",
+                file=sys.stderr,
+            )
+    if print_header:
+        _print_search_plain_header()
+    for item in page_result.embedded.media:
+        print(_format_search_item_plain(item))
+
+
 class CliSubcommand(ABC):
-    """One subcommand: its parser arguments and execution."""
+    """One subcommand: its parser arguments and async execution."""
 
     name: str
     help: str
@@ -94,18 +129,18 @@ class CliSubcommand(ABC):
         """Configure the subparser for this command."""
 
     @abstractmethod
-    def run(self, args: argparse.Namespace) -> None:
-        """Execute after global parse.
+    async def run(self, args: argparse.Namespace) -> None:
+        """Execute the command.
 
         ``args`` includes parent options (for example ``timeout``).
         """
 
 
 class SearchCommand(CliSubcommand):
-    """``search`` — list media ids in a capture date range."""
+    """``search`` — list media rows in a capture date range."""
 
     name = "search"
-    help = "List media ids in a capture date range"
+    help = "List media in a capture date range (tab-separated fields; use --json for raw API payloads)"
 
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
@@ -142,53 +177,47 @@ class SearchCommand(CliSubcommand):
             help="Print full API JSON (with --all-pages: list of page payloads)",
         )
 
-    def run(self, args: argparse.Namespace) -> None:
+    async def run(self, args: argparse.Namespace) -> None:
         _require_token()
         start = _parse_dt(args.start)
         end = _parse_dt(args.end)
-        per_page = args.per_page
-        page = args.page
 
-        with GoProAPI(timeout=args.timeout) as api:
+        async with AsyncGoProClient(timeout=args.timeout) as client:
             if args.all_pages:
                 all_pages: list[dict] = []
-                while True:
-                    params = GoProMediaSearchParams(
-                        captured_range=CapturedRange(start=start, end=end),
-                        page=page,
-                        per_page=per_page,
-                    )
-                    page_result = api.search(params)
-                    if not page_result.embedded.media:
-                        break
+                first_plain_page = True
+                async for page_result in client.iter_nonempty_search_pages(
+                    start, end, per_page=args.per_page, start_page=args.page
+                ):
                     if args.json:
                         all_pages.append(
                             page_result.model_dump(by_alias=True, mode="json"),
                         )
                     else:
-                        for item in page_result.embedded.media:
-                            print(item.id)
-                    page += 1
+                        _print_search_plain_page(
+                            page_result,
+                            print_header=first_plain_page,
+                        )
+                        first_plain_page = False
                 if args.json:
                     print(json.dumps(all_pages, indent=2))
                 return
 
             params = GoProMediaSearchParams(
                 captured_range=CapturedRange(start=start, end=end),
-                page=page,
-                per_page=per_page,
+                page=args.page,
+                per_page=args.per_page,
             )
-            page_result = api.search(params)
-            if args.json:
-                print(
-                    json.dumps(
-                        page_result.model_dump(by_alias=True, mode="json"),
-                        indent=2,
-                    ),
-                )
-            else:
-                for item in page_result.embedded.media:
-                    print(item.id)
+            page_result = await client.search(params)
+        if args.json:
+            print(
+                json.dumps(
+                    page_result.model_dump(by_alias=True, mode="json"),
+                    indent=2,
+                ),
+            )
+        else:
+            _print_search_plain_page(page_result)
 
 
 class InfoCommand(CliSubcommand):
@@ -205,10 +234,10 @@ class InfoCommand(CliSubcommand):
             help="Print full API JSON",
         )
 
-    def run(self, args: argparse.Namespace) -> None:
+    async def run(self, args: argparse.Namespace) -> None:
         _require_token()
-        with GoProAPI(timeout=args.timeout) as api:
-            meta = api.download(args.media_id)
+        async with AsyncGoProClient(timeout=args.timeout) as client:
+            meta = await client.download(args.media_id)
         if args.json:
             print(
                 json.dumps(
@@ -218,12 +247,11 @@ class InfoCommand(CliSubcommand):
             )
         else:
             print(meta.filename)
-
-            if _is_video_filename(meta.filename):
-                media_list = meta.embedded.variations
-            else:
-                media_list = meta.embedded.files
-
+            media_list = (
+                meta.embedded.variations
+                if is_video_filename(meta.filename)
+                else meta.embedded.files
+            )
             for idx, media_item in enumerate(media_list):
                 print(
                     f"  {idx:>3}  {media_item.width}x{media_item.height}  "
@@ -261,32 +289,30 @@ class PullCommand(CliSubcommand):
             ),
         )
 
-    def run(self, args: argparse.Namespace) -> None:
+    async def run(self, args: argparse.Namespace) -> None:
         _require_token()
-        with GoProAPI(timeout=args.timeout) as api:
-            meta = api.download(args.media_id)
-
-            if _is_video_filename(meta.filename):
-                chosen = _select_video_variation(
-                    meta.embedded.variations,
+        async with AsyncGoProClient(timeout=args.timeout) as client:
+            meta = await client.download(args.media_id)
+            try:
+                assets = pull_assets_for_response(
+                    meta,
                     target_height=args.height,
                     target_width=args.width,
                 )
-                media_list = [chosen]
-            else:
-                media_list = meta.embedded.files
+            except NoVariationsError as exc:
+                sys.stderr.write(f"error: {exc}\n")
+                raise SystemExit(2) from exc
 
-            for idx, file_entry in enumerate(media_list):
-                os.makedirs(args.destination, exist_ok=True)
-                media_name = meta.filename.split(".")[0]
-                media_type = meta.filename.split(".")[-1]
-                item_number = str(idx).zfill(3)
-                media_file_name = f"{media_name}{item_number}.{media_type}"
-                dest_path = f"{args.destination}/{media_file_name}"
-                with open(dest_path, "wb") as outfile:
-                    response = requests.get(file_entry.url, timeout=args.timeout)
-                    response.raise_for_status()
-                    outfile.write(response.content)
+            os.makedirs(args.destination, exist_ok=True)
+            await asyncio.gather(
+                *(
+                    client.download_url_to_path(
+                        asset.url,
+                        os.path.join(args.destination, filename),
+                    )
+                    for filename, asset in assets.items()
+                )
+            )
 
 
 class CliBuilder:  # pylint: disable=too-few-public-methods
@@ -332,7 +358,7 @@ def main(argv: list[str] | None = None) -> None:
         ],
     )
     args = builder.build().parse_args(argv)
-    args.func(args)
+    asyncio.run(args.func(args))
 
 
 if __name__ == "__main__":
