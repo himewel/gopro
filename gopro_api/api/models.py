@@ -16,7 +16,17 @@ DEFAULT_PROCESSING_STATES: List[str] = [
     "ready",
     "failure",
 ]
-DEFAULT_FIELDS: List[str] = ["id", "capturedate"]
+DEFAULT_FIELDS: List[str] = [
+    "id",
+    "type",
+    "filename",
+    "file_extension",
+    "captured_at",
+    "file_size",
+    "item_count",
+    "width",
+    "height",
+]
 DEFAULT_MEDIA_TYPES: List[str] = [
     "Burst",
     "BurstVideo",
@@ -71,6 +81,14 @@ class GoProMediaSearchItem(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     id: str
+    type: Optional[str] = None
+    captured_at: Optional[datetime] = None
+    filename: Optional[str] = None
+    file_extension: Optional[str] = None
+    file_size: Optional[int] = None
+    item_count: Optional[int] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
     gopro_user_id: str
     source_gumi: str
     source_mgumi: Optional[str]

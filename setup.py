@@ -7,7 +7,7 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 setuptools.setup(
     name="gopro-api",
-    version="0.0.6",
+    version="0.0.7",
     author="himewel",
     author_email="welberthime@gmail.com",
     description=(
@@ -47,8 +47,8 @@ setuptools.setup(
     python_requires=">=3.10",
     install_requires=[
         "aiohttp~=3.11.14",
-        "python-dotenv~=1.0.1",
         "pydantic~=2.10.6",
+        "pydantic-settings~=2.14",
         "requests~=2.32.3",
     ],
     extras_require={
