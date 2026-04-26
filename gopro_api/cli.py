@@ -13,6 +13,7 @@ from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
 
 from gopro_api.api.models import (
+    DEFAULT_FIELDS,
     CapturedRange,
     GoProMediaSearchItem,
     GoProMediaSearchParams,
@@ -55,48 +56,14 @@ def _require_token() -> None:
         raise SystemExit(2)
 
 
-# Column order for plain-text ``search`` output (subset of ``GoProMediaSearchItem``).
-_SEARCH_ITEM_COLUMNS: tuple[str, ...] = (
-    "id",
-    "type",
-    "captured_at",
-    "filename",
-    "file_extension",
-    "file_size",
-    "item_count",
-    "width",
-    "height",
-)
-
-
-def _search_item_extras(item: GoProMediaSearchItem) -> dict[str, object]:
-    """Return API-only fields not shown as dedicated columns (e.g. capturedate)."""
-    row = item.model_dump(mode="json")
-    hidden = frozenset(
-        {
-            *_SEARCH_ITEM_COLUMNS,
-            "gopro_user_id",
-            "source_gumi",
-            "source_mgumi",
-        },
-    )
-    return {k: v for k, v in row.items() if k not in hidden}
-
-
 def _print_search_plain_header() -> None:
-    cols = list(_SEARCH_ITEM_COLUMNS) + ["extra"]
+    cols = list(DEFAULT_FIELDS)
     print("\t".join(cols))
 
 
 def _format_search_item_plain(item: GoProMediaSearchItem) -> str:
     row = item.model_dump(mode="json")
-    cells = ["" if row.get(c) is None else str(row[c]) for c in _SEARCH_ITEM_COLUMNS]
-    extra = _search_item_extras(item)
-    cells.append(
-        ""
-        if not extra
-        else json.dumps(extra, ensure_ascii=False, separators=(",", ":"))
-    )
+    cells = ["" if row.get(c) is None else str(row[c]) for c in DEFAULT_FIELDS]
     return "\t".join(cells)
 
 
@@ -144,7 +111,10 @@ class SearchCommand(CliSubcommand):
     """``search`` — list media rows in a capture date range."""
 
     name = "search"
-    help = "List media in a capture date range (tab-separated fields; use --json for raw API payloads)"
+    help = (
+        "List media in a capture date range (tab-separated fields; "
+        "use --json for raw API payloads)"
+    )
 
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(

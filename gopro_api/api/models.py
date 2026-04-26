@@ -17,11 +17,11 @@ DEFAULT_PROCESSING_STATES: List[str] = [
     "failure",
 ]
 DEFAULT_FIELDS: List[str] = [
-    "type",
     "id",
-    "captured_at",
+    "type",
     "filename",
     "file_extension",
+    "captured_at",
     "file_size",
     "item_count",
     "width",
