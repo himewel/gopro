@@ -30,6 +30,7 @@ plugins:
 nav:
   - Home: index.md
   - API Reference:
+    - API: api/api.md
     - Client: api/client.md
     - Models: api/models.md
     - CLI: api/cli.md
