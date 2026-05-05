@@ -13,6 +13,9 @@ theme:
     - navigation.top
     - search.suggest
 
+markdown_extensions:
+  - pymdownx.snippets
+
 plugins:
   - search
   - mkdocstrings:
