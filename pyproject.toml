@@ -1,10 +1,53 @@
 [build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gopro-api"
+version = "0.0.7"
+description = "Unofficial Python client for the GoPro cloud API (api.gopro.com): sync and async clients, Pydantic models, and a CLI."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "himewel", email = "welberthime@gmail.com" }]
+keywords = ["gopro", "quik", "cloud", "api", "async", "aiohttp", "media", "gopro-api"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Multimedia :: Graphics :: Capture :: Digital Camera",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp~=3.11.14",
+    "pydantic~=2.10.6",
+    "pydantic-settings~=2.14",
+    "requests~=2.32.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/himewel/gopro-api"
+"Bug Tracker" = "https://github.com/himewel/gopro-api/issues"
+Source = "https://github.com/himewel/gopro-api"
+
+[project.scripts]
+gopro-api = "gopro_api.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "black~=24.10.0",
+    "pylint~=3.3.0",
+]
 
 [tool.black]
 line-length = 88
-# Add "py312" when using Black >= 24.
 target-version = ["py310", "py311"]
 include = "\\.pyi?$"
 extend-exclude = """
@@ -27,7 +70,6 @@ extend-exclude = """
 [tool.pylint.main]
 py-version = "3.10"
 jobs = 0
-# Ensure repo root is on sys.path so ``import gopro_api`` resolves when linting.
 init-hook = "import sys; sys.path.insert(0, '.')"
 ignore-paths = [
     ".venv/.*",
@@ -44,7 +86,6 @@ indent-string = "    "
 enable = [
     "useless-suppression",
 ]
-# aiohttp ``ClientSession.get`` triggers false positives across Pylint versions.
 disable = [
     "not-async-context-manager",
 ]
