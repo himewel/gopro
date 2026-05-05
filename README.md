@@ -1,5 +1,12 @@
 # gopro-api
 
+[![PyPI version](https://img.shields.io/pypi/v/gopro-api)](https://pypi.org/project/gopro-api/)
+[![Python versions](https://img.shields.io/pypi/pyversions/gopro-api)](https://pypi.org/project/gopro-api/)
+[![License](https://img.shields.io/github/license/himewel/gopro-api)](LICENSE)
+[![CI](https://github.com/himewel/gopro-api/actions/workflows/ci.yml/badge.svg)](https://github.com/himewel/gopro-api/actions/workflows/ci.yml)
+[![Release](https://github.com/himewel/gopro-api/actions/workflows/release.yml/badge.svg)](https://github.com/himewel/gopro-api/actions/workflows/release.yml)
+[![Docs](https://img.shields.io/badge/docs-MkDocs-blue)](https://himewel.github.io/gopro-api/)
+
 Unofficial Python client for the **GoPro cloud / Quik** HTTP API at [`api.gopro.com`](https://api.gopro.com): **search** your library and **fetch download metadata** (CDN URLs, filenames, variants). Built with **Pydantic** models, plus **sync** (`requests`) and **async** (`aiohttp`) clients and a small **`gopro-api`** CLI.
 
 This project is not affiliated with or endorsed by GoPro.
