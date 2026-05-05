@@ -1,0 +1,34 @@
+site_name: gopro-api
+site_url: https://himewel.github.io/gopro-api/
+repo_url: https://github.com/himewel/gopro-api
+repo_name: himewel/gopro-api
+
+theme:
+  name: material
+  palette:
+    scheme: default
+    primary: deep purple
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.suggest
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            docstring_style: google
+            show_root_heading: true
+            members_order: source
+
+nav:
+  - Home: index.md
+  - API Reference:
+    - Client: api/client.md
+    - Models: api/models.md
+    - CLI: api/cli.md
+    - Utils: api/utils.md
+    - Exceptions: api/exceptions.md

@@ -45,6 +45,10 @@ dev = [
     "black~=24.10.0",
     "pylint~=3.3.0",
 ]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.27",
+]
 
 [tool.black]
 line-length = 88
