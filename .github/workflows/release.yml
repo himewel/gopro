@@ -76,5 +76,13 @@ jobs:
       - name: Install docs dependencies
         run: uv pip install -e ".[docs]"
 
-      - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
+      - name: Fetch gh-pages history for mike
+        run: git fetch origin gh-pages --depth=1 || true
+
+      - name: Deploy versioned docs
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          VERSION=${GITHUB_REF_NAME}
+          mike deploy --push --update-aliases "$VERSION" latest
+          mike set-default --push latest

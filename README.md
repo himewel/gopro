@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/gopro-api)](https://pypi.org/project/gopro-api/)
 [![Python versions](https://img.shields.io/pypi/pyversions/gopro-api)](https://pypi.org/project/gopro-api/)
-[![License](https://img.shields.io/github/license/himewel/gopro-api)](LICENSE)
+[![License](https://img.shields.io/github/license/himewel/gopro-api)](https://github.com/himewel/gopro-api/blob/main/LICENSE)
 [![CI](https://github.com/himewel/gopro-api/actions/workflows/ci.yml/badge.svg)](https://github.com/himewel/gopro-api/actions/workflows/ci.yml)
 [![Release](https://github.com/himewel/gopro-api/actions/workflows/release.yml/badge.svg)](https://github.com/himewel/gopro-api/actions/workflows/release.yml)
 [![Docs](https://img.shields.io/badge/docs-MkDocs-blue)](https://himewel.github.io/gopro-api/)
@@ -207,13 +207,13 @@ List fields in search params are serialized to comma-separated strings when you 
 
 ## CI and releases
 
-[`.github/workflows/release.yml`](.github/workflows/release.yml):
+[`.github/workflows/release.yml`](https://github.com/himewel/gopro-api/blob/main/.github/workflows/release.yml):
 
 - **Push to `main`** — builds wheel + source `.zip`, uploads **workflow artifacts**.  
 - **Push tag `v*`** (e.g. `v0.0.5`) — attaches the same files to a **GitHub Release**.
 
 ## License
 
-[MIT License](LICENSE).
+[MIT License](https://github.com/himewel/gopro-api/blob/main/LICENSE).
 
 GoPro, Quik, and related marks are trademarks of their respective owners.

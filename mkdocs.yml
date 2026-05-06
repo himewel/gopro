@@ -12,6 +12,12 @@ theme:
     - navigation.tabs
     - navigation.top
     - search.suggest
+  version_provider: mike
+
+extra:
+  version:
+    provider: mike
+    default: latest
 
 markdown_extensions:
   - pymdownx.snippets
