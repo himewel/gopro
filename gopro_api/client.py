@@ -165,7 +165,12 @@ class GoProClient:
             Up to ``self.max_items`` ``GoProMediaSearchItem`` instances.
 
         Raises:
-            Same as ``search`` for each underlying API call.
+            RuntimeError: If used outside ``with GoProClient()`` on any underlying
+                ``search`` call.
+            requests.HTTPError: When any underlying ``search`` HTTP status is not
+                successful.
+            pydantic.ValidationError: If any underlying ``search`` JSON body does not
+                match the model.
         """
         all_media: list[GoProMediaSearchItem] = []
         for page_result in self.iter_nonempty_search_pages(start_date, end_date):
@@ -187,7 +192,12 @@ class GoProClient:
 
         Raises:
             NoVariationsError: For video items with no variations.
-            Same as ``download`` for each underlying API call.
+            RuntimeError: If used outside ``with GoProClient()`` on any underlying
+                ``download`` call.
+            requests.HTTPError: When any underlying ``download`` HTTP status is not
+                successful.
+            pydantic.ValidationError: If any underlying ``download`` JSON body does not
+                match the model.
         """
         assets: dict[str, DownloadAsset] = {}
         for item in media_items:
@@ -358,7 +368,12 @@ class AsyncGoProClient:
             Up to ``self.max_items`` ``GoProMediaSearchItem`` instances.
 
         Raises:
-            Same as ``search`` for each underlying API call.
+            RuntimeError: If used outside ``async with AsyncGoProClient()`` on any
+                underlying ``search`` call.
+            aiohttp.ClientResponseError: When any underlying ``search`` raises for
+                status.
+            pydantic.ValidationError: If any underlying ``search`` JSON body does not
+                match the model.
         """
         all_media: list[GoProMediaSearchItem] = []
         async for page_result in self.iter_nonempty_search_pages(start_date, end_date):
@@ -380,7 +395,12 @@ class AsyncGoProClient:
 
         Raises:
             NoVariationsError: For video items with no variations.
-            Same as ``download`` for each underlying API call.
+            RuntimeError: If used outside ``async with AsyncGoProClient()`` on any
+                underlying ``download`` call.
+            aiohttp.ClientResponseError: When any underlying ``download`` raises for
+                status.
+            pydantic.ValidationError: If any underlying ``download`` JSON body does not
+                match the model.
         """
         results: list[GoProMediaDownloadResponse] = await asyncio.gather(
             *(self._api.download(item.id) for item in media_items)
