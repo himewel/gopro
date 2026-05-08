@@ -21,8 +21,10 @@ class AsyncGoProAPI:
     def __init__(self, access_token: str | None = None, timeout: float = 10.0) -> None:
         """Create an async client.
 
-        ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.
-        ``timeout``: total HTTP client timeout in seconds.
+        Args:
+            access_token: ``gp_access_token`` cookie value; defaults to
+                ``gopro_api.config.GP_ACCESS_TOKEN``.
+            timeout: Total client timeout in seconds for ``aiohttp``.
         """
         self.access_token = access_token or GP_ACCESS_TOKEN
         self._timeout = aiohttp.ClientTimeout(total=timeout)
@@ -30,18 +32,33 @@ class AsyncGoProAPI:
 
     @property
     def base_url(self) -> str:
-        """API origin (``https://api.gopro.com``)."""
+        """HTTPS origin for API requests.
+
+        Returns:
+            Always ``https://api.gopro.com``.
+        """
         return "https://api.gopro.com"
 
     def get_headers(self, accept: str) -> dict[str, str]:
-        """Build ``Cookie`` and ``Accept`` headers for an API call."""
+        """Build headers for a JSON API request.
+
+        Args:
+            accept: Full ``Accept`` header value (vendor MIME type + version).
+
+        Returns:
+            Mapping with ``Cookie`` (token) and ``Accept``.
+        """
         return {
             "Cookie": "gp_access_token=" + self.access_token,
             "Accept": accept,
         }
 
     async def __aenter__(self) -> "AsyncGoProAPI":
-        """Open an ``aiohttp.ClientSession`` for the ``async with`` body."""
+        """Open an ``aiohttp.ClientSession`` for the ``async with`` body.
+
+        Returns:
+            ``self`` for use inside the ``async with`` body.
+        """
         self._session = aiohttp.ClientSession(
             base_url=self.base_url,
             timeout=self._timeout,
@@ -49,13 +66,24 @@ class AsyncGoProAPI:
         return self
 
     async def __aexit__(self, *exc: object) -> None:
-        """Close the session."""
+        """Close the session and clear internal state.
+
+        Args:
+            *exc: Exception info from the interpreter (ignored).
+        """
         if self._session is not None:
             await self._session.close()
             self._session = None
 
     def _session_or_raise(self) -> aiohttp.ClientSession:
-        """Return the active session or raise if not inside ``async with``."""
+        """Return the active ``aiohttp.ClientSession``.
+
+        Returns:
+            The session opened in ``__aenter__``.
+
+        Raises:
+            RuntimeError: If called before ``__aenter__`` or after ``__aexit__``.
+        """
         session = self._session
         if session is None:
             msg = (
@@ -66,7 +94,22 @@ class AsyncGoProAPI:
         return session
 
     async def download(self, media_id: str) -> GoProMediaDownloadResponse:
-        """``GET /media/{media_id}/download`` — metadata and CDN URLs for files."""
+        """Return download metadata and CDN URLs for one media item.
+
+        Calls ``GET /media/{media_id}/download`` with the GoPro media JSON
+        vendor MIME type.
+
+        Args:
+            media_id: Cloud library identifier for the media item.
+
+        Returns:
+            Parsed response (filenames, variations, embedded files, CDN URLs).
+
+        Raises:
+            RuntimeError: If used outside ``async with AsyncGoProAPI() as api``.
+            aiohttp.ClientResponseError: When ``raise_for_status`` fails.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         headers = self.get_headers("application/vnd.gopro.jk.media+json; version=2.0.0")
         session = self._session_or_raise()
         async with session.get(
@@ -78,7 +121,22 @@ class AsyncGoProAPI:
         return GoProMediaDownloadResponse.model_validate_json(body)
 
     async def search(self, params: GoProMediaSearchParams) -> GoProMediaSearchResponse:
-        """``GET /media/search`` using ``params.model_dump()`` as query string."""
+        """Search media in the cloud library with structured query parameters.
+
+        Calls ``GET /media/search``; ``params.model_dump()`` is sent as the query
+        string after serialization.
+
+        Args:
+            params: Search filters (capture range, pagination, fields, etc.).
+
+        Returns:
+            Paginated search results and embedded media rows.
+
+        Raises:
+            RuntimeError: If used outside ``async with AsyncGoProAPI() as api``.
+            aiohttp.ClientResponseError: When ``raise_for_status`` fails.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         headers = self.get_headers(
             "application/vnd.gopro.jk.media.search+json; version=2.0.0",
         )

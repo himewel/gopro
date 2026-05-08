@@ -6,10 +6,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application settings resolved from environment variables and ``.env``.
+    """Application settings from the process environment and optional ``.env`` file.
+
+    Values are read at instantiation; use ``gopro_api.config.settings`` or the
+    ``GP_ACCESS_TOKEN`` alias for the token used by API clients and the CLI.
 
     Attributes:
-        gp_access_token: GoPro cloud access token (env var ``GP_ACCESS_TOKEN``).
+        gp_access_token: GoPro cloud cookie value. Environment variable:
+            ``GP_ACCESS_TOKEN``.
     """
 
     model_config = SettingsConfigDict(

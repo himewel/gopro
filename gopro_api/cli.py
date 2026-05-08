@@ -33,7 +33,17 @@ def _version() -> str:
 
 
 def _parse_dt(raw: str) -> datetime:
-    """Accept YYYY-MM-DD or ISO datetime."""
+    """Parse a CLI date or datetime string.
+
+    Args:
+        raw: ``YYYY-MM-DD`` or full ISO 8601 string (``Z`` normalized to offset).
+
+    Returns:
+        Parsed naive or aware ``datetime`` as produced by ``fromisoformat``.
+
+    Raises:
+        ValueError: If the string is not a valid ISO date/datetime.
+    """
     raw = raw.strip()
     if len(raw) == 10 and raw[4] == "-" and raw[7] == "-":
         return datetime.fromisoformat(raw)
@@ -41,6 +51,17 @@ def _parse_dt(raw: str) -> datetime:
 
 
 def _positive_int(raw: str) -> int:
+    """Argparse type: strictly positive integer.
+
+    Args:
+        raw: Decimal digits only.
+
+    Returns:
+        Parsed integer ``>= 1``.
+
+    Raises:
+        argparse.ArgumentTypeError: If ``raw`` is not a positive integer.
+    """
     value = int(raw)
     if value <= 0:
         raise argparse.ArgumentTypeError("must be a positive integer")
@@ -48,6 +69,11 @@ def _positive_int(raw: str) -> int:
 
 
 def _require_token() -> None:
+    """Ensure ``GP_ACCESS_TOKEN`` is configured.
+
+    Raises:
+        SystemExit: With code ``2`` if the token is missing.
+    """
     if not GP_ACCESS_TOKEN:
         sys.stderr.write(
             "error: GP_ACCESS_TOKEN is not set. "
@@ -72,10 +98,10 @@ def _print_search_plain_page(
     *,
     print_header: bool = True,
 ) -> None:
-    p = page_result.pages
+    pages = page_result.pages
     print(
-        f"# _pages: current_page={p.current_page} per_page={p.per_page} "
-        f"total_items={p.total_items} total_pages={p.total_pages}",
+        f"# _pages: current_page={pages.current_page} per_page={pages.per_page} "
+        f"total_items={pages.total_items} total_pages={pages.total_pages}",
     )
     if page_result.embedded.errors:
         for err in page_result.embedded.errors:
@@ -90,25 +116,33 @@ def _print_search_plain_page(
 
 
 class CliSubcommand(ABC):
-    """One subcommand: its parser arguments and async execution."""
+    """Abstract CLI subcommand (parser wiring + async runner)."""
 
     name: str
     help: str
 
     @abstractmethod
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
-        """Configure the subparser for this command."""
+        """Attach arguments to this subcommand's ``ArgumentParser``.
+
+        Args:
+            parser: Subparser instance from ``add_subparsers``.
+        """
 
     @abstractmethod
     async def run(self, args: argparse.Namespace) -> None:
-        """Execute the command.
+        """Execute the subcommand.
 
-        ``args`` includes parent options (for example ``timeout``).
+        Args:
+            args: Parsed namespace including global flags such as ``timeout``.
+
+        Raises:
+            SystemExit: For user-facing fatal errors (for example missing token).
         """
 
 
 class SearchCommand(CliSubcommand):
-    """``search`` — list media rows in a capture date range."""
+    """``search`` — list cloud media in a capture window (plain TSV or JSON)."""
 
     name = "search"
     help = (
@@ -152,6 +186,7 @@ class SearchCommand(CliSubcommand):
         )
 
     async def run(self, args: argparse.Namespace) -> None:
+        """Run search against the cloud API and print results."""
         _require_token()
         start = _parse_dt(args.start)
         end = _parse_dt(args.end)
@@ -195,7 +230,7 @@ class SearchCommand(CliSubcommand):
 
 
 class InfoCommand(CliSubcommand):
-    """``info`` — show download metadata for one media id."""
+    """``info`` — print download metadata (URLs and sizes) for one media id."""
 
     name = "info"
     help = "Show download metadata (URLs, sizes) for one media id"
@@ -209,6 +244,7 @@ class InfoCommand(CliSubcommand):
         )
 
     async def run(self, args: argparse.Namespace) -> None:
+        """Fetch and display download metadata for ``args.media_id``."""
         _require_token()
         async with AsyncGoProClient(timeout=args.timeout) as client:
             meta = await client.download(args.media_id)
@@ -234,7 +270,7 @@ class InfoCommand(CliSubcommand):
 
 
 class PullCommand(CliSubcommand):
-    """``pull`` — download files for one media id."""
+    """``pull`` — download resolved assets for one media id into a directory."""
 
     name = "pull"
     help = "Download files from a media id"
@@ -264,6 +300,11 @@ class PullCommand(CliSubcommand):
         )
 
     async def run(self, args: argparse.Namespace) -> None:
+        """Download all resolved files for ``args.media_id`` into ``args.destination``.
+
+        Raises:
+            SystemExit: Code ``2`` if the token is missing or no video variations exist.
+        """
         _require_token()
         async with AsyncGoProClient(timeout=args.timeout) as client:
             meta = await client.download(args.media_id)
@@ -290,13 +331,22 @@ class PullCommand(CliSubcommand):
 
 
 class CliBuilder:  # pylint: disable=too-few-public-methods
-    """Assembles the root parser and one subparser per registered command."""
+    """Build ``argparse`` CLI from a sequence of ``CliSubcommand`` implementations."""
 
     def __init__(self, commands: Sequence[CliSubcommand]) -> None:
+        """Store commands to expose as subparsers.
+
+        Args:
+            commands: Non-empty sequence of subcommand instances.
+        """
         self._commands = list(commands)
 
     def build(self) -> argparse.ArgumentParser:
-        """Return the root parser with global options and subcommands."""
+        """Construct the root parser with globals and subcommands.
+
+        Returns:
+            Configured ``ArgumentParser`` (not yet ``parse_args``).
+        """
         parser = argparse.ArgumentParser(
             prog="gopro-api",
             description="CLI for the unofficial GoPro cloud API (api.gopro.com).",
@@ -323,7 +373,14 @@ class CliBuilder:  # pylint: disable=too-few-public-methods
 
 
 def main(argv: list[str] | None = None) -> None:
-    """Parse CLI arguments and dispatch to the selected subcommand handler."""
+    """CLI entrypoint: parse ``argv`` and run the selected async subcommand.
+
+    Args:
+        argv: Argument list (defaults to ``sys.argv[1:]`` when ``None``).
+
+    Raises:
+        SystemExit: On argparse errors or explicit ``SystemExit`` from commands.
+    """
     builder = CliBuilder(
         [
             SearchCommand(),

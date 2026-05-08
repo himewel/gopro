@@ -22,7 +22,14 @@ __all__ = [
 
 
 def is_video_filename(filename: str) -> bool:
-    """Return True if ``filename`` has a ``.mp4`` extension (case-insensitive)."""
+    """Return whether the filename looks like MP4 video.
+
+    Args:
+        filename: Basename or path ending (extension is checked case-insensitively).
+
+    Returns:
+        ``True`` if the suffix is ``.mp4``.
+    """
     parts = filename.rsplit(".", 1)
     return len(parts) == 2 and parts[1].lower() == "mp4"
 
@@ -44,28 +51,42 @@ def select_video_variation(
         target_height: Desired height in pixels, or ``None``.
         target_width: Desired width in pixels, or ``None``.
 
+    Returns:
+        The selected ``GoProMediaDownloadVariation``.
+
     Raises:
         NoVariationsError: If ``variations`` is empty.
     """
     if not variations:
         raise NoVariationsError("API returned no video variations for this media id.")
     if target_height is None and target_width is None:
-        return max(variations, key=lambda v: v.height)
+        return max(variations, key=lambda variation: variation.height)
 
-    def score(v: GoProMediaDownloadVariation) -> int:
-        dh = 0 if target_height is None else (v.height - target_height) ** 2
-        dw = 0 if target_width is None else (v.width - target_width) ** 2
-        return dh + dw
+    def score(variation: GoProMediaDownloadVariation) -> int:
+        height_delta_sq = (
+            0 if target_height is None else (variation.height - target_height) ** 2
+        )
+        width_delta_sq = (
+            0 if target_width is None else (variation.width - target_width) ** 2
+        )
+        return height_delta_sq + width_delta_sq
 
-    best_score = min(score(v) for v in variations)
-    tied = [v for v in variations if score(v) == best_score]
-    return max(tied, key=lambda v: (v.height, v.width))
+    best_score = min(score(variation) for variation in variations)
+    tied = [variation for variation in variations if score(variation) == best_score]
+    return max(tied, key=lambda variation: (variation.height, variation.width))
 
 
 def get_file_name(root_name: str, item_number: int) -> str:
     """Build a part filename by inserting a zero-padded index before the extension.
 
     Example: ``get_file_name("GX010001.MP4", 2)`` → ``"GX010001002.MP4"``.
+
+    Args:
+        root_name: Original media filename including extension.
+        item_number: Non-negative part index (three-digit zero padding).
+
+    Returns:
+        Derived filename string.
     """
     media_name, _, file_format = root_name.rpartition(".")
     return f"{media_name}{str(item_number).zfill(3)}.{file_format}"
@@ -83,6 +104,14 @@ def pull_assets_for_response(
     Non-video: returns every file in ``_embedded.files`` in enumeration order
     (no ``available`` filtering, preserving CLI behaviour for burst sets).
 
+    Args:
+        result: Parsed download-metadata response for one media id.
+        target_height: Optional preferred video height for variation scoring.
+        target_width: Optional preferred video width for variation scoring.
+
+    Returns:
+        Mapping of local filename to downloadable file or variation row.
+
     Raises:
         NoVariationsError: For video media when no variations are present.
     """
@@ -99,6 +128,14 @@ def pull_assets_for_response(
 
 
 def write_bytes(path: str, data: bytes) -> None:
-    """Write ``data`` to ``path`` (helper for ``asyncio.to_thread``)."""
-    with open(path, "wb") as fh:
-        fh.write(data)
+    """Write binary data to a path (blocking I/O).
+
+    Args:
+        path: Destination file path.
+        data: Raw bytes to persist.
+
+    Raises:
+        OSError: If the file cannot be opened or written.
+    """
+    with open(path, "wb") as out_file:
+        out_file.write(data)

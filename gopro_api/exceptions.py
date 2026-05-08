@@ -6,4 +6,8 @@ __all__ = ["NoVariationsError"]
 
 
 class NoVariationsError(Exception):
-    """Raised when no video variations are available for a media item."""
+    """Raised when video download metadata lists zero renditions.
+
+    Typical cause: ``_embedded.variations`` is empty while the media filename
+    is treated as video (for example ``.mp4``).
+    """
