@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="gopro-api">
+  <!-- Matches repo social banner: dark squircle, camera silhouette, cyan accents (#00AEEF) -->
+  <rect width="32" height="32" rx="8" fill="#121214"/>
+  <!-- Camera body -->
+  <rect x="5" y="10.5" width="22" height="9" rx="2.2" fill="#2a2e36"/>
+  <!-- Lens -->
+  <circle cx="10.8" cy="15" r="3.6" fill="#08090c"/>
+  <!-- Status / indicator window -->
+  <rect x="17.2" y="12.2" width="8.2" height="5.6" rx="1.4" fill="#1e2229"/>
+  <!-- Cyan dot -->
+  <circle cx="21.3" cy="15" r="1.65" fill="#00AEEF"/>
+  <!-- Accent bar under camera -->
+  <rect x="6.5" y="22.5" width="19" height="2.4" rx="1.2" fill="#00AEEF"/>
+</svg>

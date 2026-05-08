@@ -5,24 +5,25 @@ repo_name: himewel/gopro-api
 
 theme:
   name: material
+  favicon: assets/favicon.svg
+  logo: assets/favicon.svg
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: grey
-      accent: green
+      accent: cyan
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: grey
-      accent: green
+      accent: cyan
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
+    - navigation.indexes
     - navigation.top
     - search.suggest
     - search.highlight
@@ -33,6 +34,11 @@ extra:
   version:
     provider: mike
     default: latest
+
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/monokai.css
+  - stylesheets/colorful.css
 
 markdown_extensions:
   - pymdownx.snippets
