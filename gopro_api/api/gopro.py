@@ -21,8 +21,10 @@ class GoProAPI:
     def __init__(self, access_token: str | None = None, timeout: float = 10.0) -> None:
         """Create a sync client.
 
-        ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.
-        ``timeout``: per-request timeout in seconds.
+        Args:
+            access_token: ``gp_access_token`` cookie value; defaults to
+                ``gopro_api.config.GP_ACCESS_TOKEN``.
+            timeout: Per-request timeout in seconds passed to ``requests``.
         """
         self.access_token = access_token or GP_ACCESS_TOKEN
         self._timeout = timeout
@@ -30,36 +32,77 @@ class GoProAPI:
 
     @property
     def base_url(self) -> str:
-        """API origin (``https://api.gopro.com``)."""
+        """HTTPS origin for API requests.
+
+        Returns:
+            Always ``https://api.gopro.com``.
+        """
         return "https://api.gopro.com"
 
     def get_headers(self, accept: str) -> dict[str, str]:
-        """Build ``Cookie`` and ``Accept`` headers for an API call."""
+        """Build headers for a JSON API request.
+
+        Args:
+            accept: Full ``Accept`` header value (vendor MIME type + version).
+
+        Returns:
+            Mapping with ``Cookie`` (token) and ``Accept``.
+        """
         return {
             "Cookie": "gp_access_token=" + self.access_token,
             "Accept": accept,
         }
 
     def __enter__(self) -> "GoProAPI":
-        """Open a ``requests.Session`` for the duration of the ``with`` block."""
+        """Open a ``requests.Session`` for the duration of the ``with`` block.
+
+        Returns:
+            ``self`` for use inside the ``with`` body.
+        """
         self._session = requests.Session()
         return self
 
     def __exit__(self, *exc: object) -> None:
-        """Close the session."""
+        """Close the session and clear internal state.
+
+        Args:
+            *exc: Exception info from the interpreter (ignored).
+        """
         if self._session is not None:
             self._session.close()
             self._session = None
 
     def _session_or_raise(self) -> requests.Session:
-        """Return the active session or raise if used outside a context manager."""
+        """Return the active ``requests.Session``.
+
+        Returns:
+            The session opened in ``__enter__``.
+
+        Raises:
+            RuntimeError: If called before ``__enter__`` or after ``__exit__``.
+        """
         if self._session is None:
             msg = "Use GoProAPI as a context manager: with GoProAPI() as api: ..."
             raise RuntimeError(msg)
         return self._session
 
     def download(self, media_id: str) -> GoProMediaDownloadResponse:
-        """``GET /media/{media_id}/download`` — metadata and CDN URLs for files."""
+        """Return download metadata and CDN URLs for one media item.
+
+        Calls ``GET /media/{media_id}/download`` with the GoPro media JSON
+        vendor MIME type.
+
+        Args:
+            media_id: Cloud library identifier for the media item.
+
+        Returns:
+            Parsed response (filenames, variations, embedded files, CDN URLs).
+
+        Raises:
+            RuntimeError: If used outside ``with GoProAPI() as api``.
+            requests.HTTPError: When the response status is not successful.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         headers = self.get_headers("application/vnd.gopro.jk.media+json; version=2.0.0")
         session = self._session_or_raise()
         response = session.get(
@@ -71,7 +114,22 @@ class GoProAPI:
         return GoProMediaDownloadResponse.model_validate_json(response.text)
 
     def search(self, params: GoProMediaSearchParams) -> GoProMediaSearchResponse:
-        """``GET /media/search`` using ``params.model_dump()`` as query string."""
+        """Search media in the cloud library with structured query parameters.
+
+        Calls ``GET /media/search``; ``params.model_dump()`` is sent as the query
+        string after serialization.
+
+        Args:
+            params: Search filters (capture range, pagination, fields, etc.).
+
+        Returns:
+            Paginated search results and embedded media rows.
+
+        Raises:
+            RuntimeError: If used outside ``with GoProAPI() as api``.
+            requests.HTTPError: When the response status is not successful.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         headers = self.get_headers(
             "application/vnd.gopro.jk.media.search+json; version=2.0.0",
         )

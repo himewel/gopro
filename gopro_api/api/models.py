@@ -42,14 +42,26 @@ DEFAULT_MEDIA_TYPES: List[str] = [
 
 
 class CapturedRange(BaseModel):
-    """Capture window for search; serialized to the API ``captured_range`` string."""
+    """Inclusive capture date window used in search queries.
+
+    Serialized to a single ``captured_range`` query string with fixed
+    ``T00:00:00.000Z`` suffixes, as required by the cloud API.
+
+    Attributes:
+        start: Range start (date portion used in the wire format).
+        end: Range end (date portion used in the wire format).
+    """
 
     start: datetime
     end: datetime
 
     @model_serializer
     def _serialize_captured_range(self) -> str:
-        """Emit the ``captured_range`` query fragment expected by the API."""
+        """Serialize this range for the ``captured_range`` query parameter.
+
+        Returns:
+            Comma-separated ISO date pair with ``Z`` UTC suffixes.
+        """
         return (
             f"{self.start.isoformat()}T00:00:00.000Z,"
             f"{self.end.isoformat()}T00:00:00.000Z"
@@ -57,7 +69,19 @@ class CapturedRange(BaseModel):
 
 
 class GoProMediaSearchParams(BaseModel):
-    """Query parameters for ``GET /media/search`` (lists as comma-separated values)."""
+    """Query body for ``GET /media/search``.
+
+    List fields are serialized to comma-separated strings in the query string.
+    Defaults match typical Quik / cloud library expectations.
+
+    Attributes:
+        processing_states: Allowed processing states filter.
+        fields: Columns to request for each media row.
+        type: Media type filter.
+        captured_range: Capture time window.
+        page: 1-based page index.
+        per_page: Page size.
+    """
 
     processing_states: List[str] = DEFAULT_PROCESSING_STATES
     fields: List[str] = DEFAULT_FIELDS
@@ -71,12 +95,36 @@ class GoProMediaSearchParams(BaseModel):
 
     @field_serializer("processing_states", "fields", "type")
     def _serialize_csv_lists(self, value: List[str]) -> str:
-        """Join list fields into one comma-separated string for the query."""
+        """Join list fields into one comma-separated string for the query.
+
+        Args:
+            value: String sequence to join.
+
+        Returns:
+            Single CSV fragment suitable for the query string.
+        """
         return ",".join(value)
 
 
 class GoProMediaSearchItem(BaseModel):
-    """Single item in ``_embedded.media`` from a media search response."""
+    """One media row from ``GET /media/search``.
+
+    Unknown JSON keys are retained via ``extra="allow"`` for forward compatibility.
+
+    Attributes:
+        id: Cloud media identifier (used with ``download``).
+        type: Media kind (video, photo, burst, etc.).
+        captured_at: Capture timestamp when provided.
+        filename: Primary filename when provided.
+        file_extension: Extension without dot when provided.
+        file_size: Size in bytes when provided.
+        item_count: Parts in a burst/set when provided.
+        width: Pixel width when provided.
+        height: Pixel height when provided.
+        gopro_user_id: Owning user id from the API.
+        source_gumi: Source identifier from the API.
+        source_mgumi: Optional secondary source id.
+    """
 
     model_config = ConfigDict(extra="allow")
 
@@ -95,7 +143,12 @@ class GoProMediaSearchItem(BaseModel):
 
 
 class GoProMediaSearchEmbedded(BaseModel):
-    """``_embedded`` object on a media search response."""
+    """``_embedded`` block for a search response (``_embedded`` in JSON).
+
+    Attributes:
+        media: Result rows for the current page.
+        errors: Non-fatal API warnings or error objects.
+    """
 
     model_config = ConfigDict(extra="allow")
 
@@ -104,7 +157,14 @@ class GoProMediaSearchEmbedded(BaseModel):
 
 
 class GoProMediaSearchPages(BaseModel):
-    """Pagination block ``_pages`` on a media search response."""
+    """Pagination metadata (``_pages`` in JSON).
+
+    Attributes:
+        current_page: Active 1-based page.
+        per_page: Requested page size.
+        total_items: Total rows matching the query.
+        total_pages: Total pages available.
+    """
 
     current_page: int
     per_page: int
@@ -113,7 +173,12 @@ class GoProMediaSearchPages(BaseModel):
 
 
 class GoProMediaSearchResponse(BaseModel):
-    """Top-level JSON body from ``GET /media/search``."""
+    """Top-level JSON body from ``GET /media/search``.
+
+    Attributes:
+        embedded: Media rows and errors (alias ``_embedded``).
+        pages: Pagination (alias ``_pages``).
+    """
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -122,7 +187,18 @@ class GoProMediaSearchResponse(BaseModel):
 
 
 class GoProMediaDownloadFile(BaseModel):
-    """One downloadable file under ``_embedded.files`` from download metadata."""
+    """Non-video or burst member file with a CDN URL.
+
+    Attributes:
+        url: HTTPS URL for this part.
+        head: API-specific head token.
+        camera_position: Camera slot label from the API.
+        item_number: Part index within the set.
+        width: Pixel width.
+        height: Pixel height.
+        orientation: EXIF-style orientation integer.
+        available: Whether the asset is listed as fetchable.
+    """
 
     model_config = ConfigDict(extra="allow")
 
@@ -137,7 +213,18 @@ class GoProMediaDownloadFile(BaseModel):
 
 
 class GoProMediaDownloadVariation(BaseModel):
-    """Rendered size / quality variant in ``_embedded.variations``."""
+    """Video rendition (resolution / quality) with a CDN URL.
+
+    Attributes:
+        url: HTTPS URL for this rendition.
+        head: API-specific head token.
+        width: Pixel width.
+        height: Pixel height.
+        label: Human-readable label from the API.
+        type: Rendition type string from the API.
+        quality: Quality bucket from the API.
+        available: Whether the rendition is listed as fetchable.
+    """
 
     model_config = ConfigDict(extra="allow")
 
@@ -152,7 +239,16 @@ class GoProMediaDownloadVariation(BaseModel):
 
 
 class GoProMediaDownloadSidecarFile(BaseModel):
-    """Sidecar asset (e.g. zip) in ``_embedded.sidecar_files``."""
+    """Auxiliary asset such as a ZIP sidecar.
+
+    Attributes:
+        url: HTTPS URL when available.
+        head: API-specific head token.
+        label: Display label.
+        type: Asset type string from the API.
+        fps: Frames per second when applicable.
+        available: Whether the asset is listed as fetchable.
+    """
 
     model_config = ConfigDict(extra="allow")
 
@@ -165,7 +261,14 @@ class GoProMediaDownloadSidecarFile(BaseModel):
 
 
 class GoProMediaDownloadEmbedded(BaseModel):
-    """``_embedded`` on a media download metadata response."""
+    """Payload nested under ``_embedded`` for download metadata.
+
+    Attributes:
+        files: Non-video / multi-part files.
+        variations: Video renditions.
+        sprites: Sprite sheet metadata (structure varies).
+        sidecar_files: Additional downloadable bundles.
+    """
 
     model_config = ConfigDict(extra="allow")
 
@@ -176,7 +279,12 @@ class GoProMediaDownloadEmbedded(BaseModel):
 
 
 class GoProMediaDownloadResponse(BaseModel):
-    """Top-level JSON body from ``GET /media/{id}/download``."""
+    """Top-level JSON body from ``GET /media/{id}/download``.
+
+    Attributes:
+        filename: Primary media filename from the API.
+        embedded: Nested files, variations, and sidecars (alias ``_embedded``).
+    """
 
     model_config = ConfigDict(populate_by_name=True)
 

@@ -34,16 +34,8 @@ class GoProClient:
     """High-level sync client for GoPro cloud media.
 
     Wraps ``GoProAPI`` via composition and adds search pagination, asset
-    selection, and file download helpers.  Use as a context manager; the
+    selection, and file download helpers. Use as a context manager; the
     underlying HTTP session is opened and closed for you.
-
-    Args:
-        access_token: Cookie value; defaults to ``GP_ACCESS_TOKEN``.
-        timeout: Per-request HTTP timeout in seconds.
-        page_size: Items per search page for ``iter_nonempty_search_pages``.
-        max_items: Upper bound on items returned from ``list_media_items``.
-        prefer_height: Target height in pixels for variation scoring.
-        prefer_width: Target width in pixels for variation scoring.
     """
 
     def __init__(
@@ -56,6 +48,17 @@ class GoProClient:
         prefer_height: int | None = None,
         prefer_width: int | None = None,
     ) -> None:
+        """Create a sync high-level client.
+
+        Args:
+            access_token: ``gp_access_token`` cookie value; defaults to
+                ``gopro_api.config.GP_ACCESS_TOKEN``.
+            timeout: Per-request HTTP timeout in seconds (API and CDN fetches).
+            page_size: Default page size for ``iter_nonempty_search_pages``.
+            max_items: Maximum rows returned by ``list_media_items``.
+            prefer_height: Preferred video height in pixels for ``get_download_url``.
+            prefer_width: Preferred video width in pixels for ``get_download_url``.
+        """
         self._api = GoProAPI(access_token=access_token, timeout=timeout)
         self._timeout = timeout
         self.page_size = page_size
@@ -64,10 +67,16 @@ class GoProClient:
         self.prefer_width = prefer_width
 
     def __enter__(self) -> "GoProClient":
+        """Enter the underlying ``GoProAPI`` context.
+
+        Returns:
+            ``self``.
+        """
         self._api.__enter__()
         return self
 
     def __exit__(self, *exc: object) -> None:
+        """Exit the underlying ``GoProAPI`` context."""
         self._api.__exit__(*exc)
 
     # ------------------------------------------------------------------
@@ -75,11 +84,35 @@ class GoProClient:
     # ------------------------------------------------------------------
 
     def search(self, params: GoProMediaSearchParams) -> GoProMediaSearchResponse:
-        """Proxy to ``GoProAPI.search``."""
+        """Run a single media search request.
+
+        Args:
+            params: Query parameters for ``GET /media/search``.
+
+        Returns:
+            Parsed search response.
+
+        Raises:
+            RuntimeError: If used outside ``with GoProClient()``.
+            requests.HTTPError: When the HTTP status is not successful.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         return self._api.search(params)
 
     def download(self, media_id: str) -> GoProMediaDownloadResponse:
-        """Proxy to ``GoProAPI.download``."""
+        """Fetch download metadata for one media id.
+
+        Args:
+            media_id: Cloud library identifier.
+
+        Returns:
+            Parsed download metadata response.
+
+        Raises:
+            RuntimeError: If used outside ``with GoProClient()``.
+            requests.HTTPError: When the HTTP status is not successful.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         return self._api.download(media_id)
 
     # ------------------------------------------------------------------
@@ -97,10 +130,13 @@ class GoProClient:
         """Yield search result pages until one returns an empty ``_embedded.media``.
 
         Args:
-            start_date: Capture range start.
+            start_date: Capture range start (inclusive semantics per API).
             end_date: Capture range end.
             per_page: Items per page; defaults to ``self.page_size``.
             start_page: First page number to request (1-indexed).
+
+        Yields:
+            Each non-empty ``GoProMediaSearchResponse`` page.
         """
         page = start_page
         size = per_page if per_page is not None else self.page_size
@@ -119,7 +155,23 @@ class GoProClient:
     def list_media_items(
         self, start_date: datetime, end_date: datetime
     ) -> list[GoProMediaSearchItem]:
-        """Return up to ``max_items`` media items in the capture window."""
+        """Collect media rows across pages up to ``max_items``.
+
+        Args:
+            start_date: Capture range start.
+            end_date: Capture range end.
+
+        Returns:
+            Up to ``self.max_items`` ``GoProMediaSearchItem`` instances.
+
+        Raises:
+            RuntimeError: If used outside ``with GoProClient()`` on any underlying
+                ``search`` call.
+            requests.HTTPError: When any underlying ``search`` HTTP status is not
+                successful.
+            pydantic.ValidationError: If any underlying ``search`` JSON body does not
+                match the model.
+        """
         all_media: list[GoProMediaSearchItem] = []
         for page_result in self.iter_nonempty_search_pages(start_date, end_date):
             all_media.extend(page_result.embedded.media)
@@ -130,9 +182,22 @@ class GoProClient:
     def get_download_url(
         self, media_items: list[GoProMediaSearchItem]
     ) -> dict[str, DownloadAsset]:
-        """Resolve download assets for each item in ``media_items``.
+        """Resolve download assets for each search row.
 
-        Returns a merged ``filename → asset`` mapping for all items.
+        Args:
+            media_items: One or more media rows (typically from search).
+
+        Returns:
+            Merged mapping of output filename to file or variation metadata.
+
+        Raises:
+            NoVariationsError: For video items with no variations.
+            RuntimeError: If used outside ``with GoProClient()`` on any underlying
+                ``download`` call.
+            requests.HTTPError: When any underlying ``download`` HTTP status is not
+                successful.
+            pydantic.ValidationError: If any underlying ``download`` JSON body does not
+                match the model.
         """
         assets: dict[str, DownloadAsset] = {}
         for item in media_items:
@@ -147,35 +212,34 @@ class GoProClient:
         return assets
 
     def download_url_to_path(self, url: str, dest_path: str) -> None:
-        """Fetch ``url`` and write bytes to ``dest_path``.
+        """Download a CDN URL to a local path.
 
-        CDN URLs are on a different host from ``api.gopro.com`` so a dedicated
-        one-shot ``requests.get`` is used rather than the API session.
+        Uses a one-shot ``requests.get`` because CDN hosts differ from
+        ``api.gopro.com``.
+
+        Args:
+            url: Fully qualified HTTPS URL from download metadata.
+            dest_path: Filesystem path for the response body.
+
+        Raises:
+            requests.HTTPError: When the HTTP status is not successful.
+            OSError: If the destination cannot be written.
         """
         response = requests.get(url, timeout=self._timeout)
         response.raise_for_status()
         dest_dir = os.path.dirname(dest_path)
         if dest_dir:
             os.makedirs(dest_dir, exist_ok=True)
-        with open(dest_path, "wb") as fh:
-            fh.write(response.content)
+        with open(dest_path, "wb") as out_file:
+            out_file.write(response.content)
 
 
 class AsyncGoProClient:
     """High-level async client for GoPro cloud media.
 
     Wraps ``AsyncGoProAPI`` via composition and mirrors ``GoProClient`` using
-    ``async/await`` and ``aiohttp`` for all I/O.  Use as an async context
-    manager; the underlying ``aiohttp.ClientSession`` is opened and closed
-    for you.
-
-    Args:
-        access_token: Cookie value; defaults to ``GP_ACCESS_TOKEN``.
-        timeout: Total ``aiohttp`` client timeout in seconds.
-        page_size: Items per search page.
-        max_items: Upper bound on items returned from ``list_media_items``.
-        prefer_height: Target height in pixels for variation scoring.
-        prefer_width: Target width in pixels for variation scoring.
+    ``async/await`` and ``aiohttp``. Use as an async context manager; the
+    underlying ``aiohttp.ClientSession`` is opened and closed for you.
     """
 
     def __init__(
@@ -188,6 +252,17 @@ class AsyncGoProClient:
         prefer_height: int | None = None,
         prefer_width: int | None = None,
     ) -> None:
+        """Create an async high-level client.
+
+        Args:
+            access_token: ``gp_access_token`` cookie value; defaults to
+                ``gopro_api.config.GP_ACCESS_TOKEN``.
+            timeout: Total ``aiohttp`` client timeout in seconds.
+            page_size: Default page size for ``iter_nonempty_search_pages``.
+            max_items: Maximum rows returned by ``list_media_items``.
+            prefer_height: Preferred video height in pixels for ``get_download_url``.
+            prefer_width: Preferred video width in pixels for ``get_download_url``.
+        """
         self._api = AsyncGoProAPI(access_token=access_token, timeout=timeout)
         self.page_size = page_size
         self.max_items = max_items
@@ -195,10 +270,16 @@ class AsyncGoProClient:
         self.prefer_width = prefer_width
 
     async def __aenter__(self) -> "AsyncGoProClient":
+        """Enter the underlying ``AsyncGoProAPI`` context.
+
+        Returns:
+            ``self``.
+        """
         await self._api.__aenter__()
         return self
 
     async def __aexit__(self, *exc: object) -> None:
+        """Exit the underlying ``AsyncGoProAPI`` context."""
         await self._api.__aexit__(*exc)
 
     # ------------------------------------------------------------------
@@ -206,11 +287,35 @@ class AsyncGoProClient:
     # ------------------------------------------------------------------
 
     async def search(self, params: GoProMediaSearchParams) -> GoProMediaSearchResponse:
-        """Proxy to ``AsyncGoProAPI.search``."""
+        """Run a single media search request.
+
+        Args:
+            params: Query parameters for ``GET /media/search``.
+
+        Returns:
+            Parsed search response.
+
+        Raises:
+            RuntimeError: If used outside ``async with AsyncGoProClient()``.
+            aiohttp.ClientResponseError: When ``raise_for_status`` fails.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         return await self._api.search(params)
 
     async def download(self, media_id: str) -> GoProMediaDownloadResponse:
-        """Proxy to ``AsyncGoProAPI.download``."""
+        """Fetch download metadata for one media id.
+
+        Args:
+            media_id: Cloud library identifier.
+
+        Returns:
+            Parsed download metadata response.
+
+        Raises:
+            RuntimeError: If used outside ``async with AsyncGoProClient()``.
+            aiohttp.ClientResponseError: When ``raise_for_status`` fails.
+            pydantic.ValidationError: If the JSON body does not match the model.
+        """
         return await self._api.download(media_id)
 
     # ------------------------------------------------------------------
@@ -228,10 +333,13 @@ class AsyncGoProClient:
         """Yield search pages until one returns an empty ``_embedded.media``.
 
         Args:
-            start_date: Capture range start.
+            start_date: Capture range start (inclusive semantics per API).
             end_date: Capture range end.
             per_page: Items per page; defaults to ``self.page_size``.
             start_page: First page number to request (1-indexed).
+
+        Yields:
+            Each non-empty ``GoProMediaSearchResponse`` page.
         """
         page = start_page
         size = per_page if per_page is not None else self.page_size
@@ -250,7 +358,23 @@ class AsyncGoProClient:
     async def list_media_items(
         self, start_date: datetime, end_date: datetime
     ) -> list[GoProMediaSearchItem]:
-        """Return up to ``max_items`` media items in the capture window."""
+        """Collect media rows across pages up to ``max_items``.
+
+        Args:
+            start_date: Capture range start.
+            end_date: Capture range end.
+
+        Returns:
+            Up to ``self.max_items`` ``GoProMediaSearchItem`` instances.
+
+        Raises:
+            RuntimeError: If used outside ``async with AsyncGoProClient()`` on any
+                underlying ``search`` call.
+            aiohttp.ClientResponseError: When any underlying ``search`` raises for
+                status.
+            pydantic.ValidationError: If any underlying ``search`` JSON body does not
+                match the model.
+        """
         all_media: list[GoProMediaSearchItem] = []
         async for page_result in self.iter_nonempty_search_pages(start_date, end_date):
             all_media.extend(page_result.embedded.media)
@@ -261,9 +385,22 @@ class AsyncGoProClient:
     async def get_download_url(
         self, media_items: list[GoProMediaSearchItem]
     ) -> dict[str, DownloadAsset]:
-        """Resolve download assets for all items in parallel via ``asyncio.gather``.
+        """Resolve download assets for each search row in parallel.
 
-        Returns a merged ``filename → asset`` mapping for all items.
+        Args:
+            media_items: One or more media rows (typically from search).
+
+        Returns:
+            Merged mapping of output filename to file or variation metadata.
+
+        Raises:
+            NoVariationsError: For video items with no variations.
+            RuntimeError: If used outside ``async with AsyncGoProClient()`` on any
+                underlying ``download`` call.
+            aiohttp.ClientResponseError: When any underlying ``download`` raises for
+                status.
+            pydantic.ValidationError: If any underlying ``download`` JSON body does not
+                match the model.
         """
         results: list[GoProMediaDownloadResponse] = await asyncio.gather(
             *(self._api.download(item.id) for item in media_items)
@@ -280,13 +417,19 @@ class AsyncGoProClient:
         return assets
 
     async def download_url_to_path(self, url: str, dest_path: str) -> None:
-        """Fetch ``url`` and write bytes to ``dest_path``.
+        """Download a CDN URL to a local path.
 
-        Always opens a fresh ``aiohttp.ClientSession`` (without a base URL) so
-        that CDN URLs on domains other than ``api.gopro.com`` are handled
-        correctly.  The full response body is buffered in memory before the
-        file write is offloaded to a thread via ``asyncio.to_thread``, which is
-        acceptable for typical GoPro file sizes.
+        Opens a dedicated ``aiohttp.ClientSession`` without ``base_url`` so CDN
+        hosts work. The body is read fully into memory, then written via
+        ``asyncio.to_thread``.
+
+        Args:
+            url: Fully qualified HTTPS URL from download metadata.
+            dest_path: Filesystem path for the response body.
+
+        Raises:
+            aiohttp.ClientResponseError: When ``raise_for_status`` fails.
+            OSError: If the destination cannot be written.
         """
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
