@@ -746,7 +746,61 @@
 
     <div class="doc doc-contents first">
 
-        <p>Return True if <code>filename</code> has a <code>.mp4</code> extension (case-insensitive).</p>
+        <p>Return whether the filename looks like MP4 video.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>filename</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Basename or path ending (extension is checked case-insensitively).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>True</code> if the suffix is <code>.mp4</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
@@ -754,8 +808,22 @@
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_video_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if ``filename`` has a ``.mp4`` extension (case-insensitive).&quot;&quot;&quot;</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_video_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return whether the filename looks like MP4 video.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename: Basename or path ending (extension is checked case-insensitively).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``True`` if the suffix is ``.mp4``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">parts</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mp4&quot;</span>
 </code></pre></div></td></tr></table></div>
@@ -844,6 +912,29 @@ dimensions; ties break toward the larger <code>(height, width)</code>.</p>
     </table>
 
 
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadVariation" href="../models/#gopro_api.api.models.GoProMediaDownloadVariation">GoProMediaDownloadVariation</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The selected <code>GoProMediaDownloadVariation</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
 <p><span class="doc-section-title">Raises:</span></p>
     <table>
       <thead>
@@ -869,14 +960,7 @@ dimensions; ties break toward the larger <code>(height, width)</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/utils.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
@@ -901,7 +985,21 @@ dimensions; ties break toward the larger <code>(height, width)</code>.</p>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">select_video_variation</span><span class="p">(</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">select_video_variation</span><span class="p">(</span>
     <span class="n">variations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">GoProMediaDownloadVariation</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">target_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -918,22 +1016,29 @@ dimensions; ties break toward the larger <code>(height, width)</code>.</p>
 <span class="sd">        target_height: Desired height in pixels, or ``None``.</span>
 <span class="sd">        target_width: Desired width in pixels, or ``None``.</span>
 
+<span class="sd">    Returns:</span>
+<span class="sd">        The selected ``GoProMediaDownloadVariation``.</span>
+
 <span class="sd">    Raises:</span>
 <span class="sd">        NoVariationsError: If ``variations`` is empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">variations</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NoVariationsError</span><span class="p">(</span><span class="s2">&quot;API returned no video variations for this media id.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target_height</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target_width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">variations</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">variations</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">variation</span><span class="p">:</span> <span class="n">variation</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">GoProMediaDownloadVariation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">dh</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">target_height</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">target_height</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="n">dw</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">target_width</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">target_width</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="k">return</span> <span class="n">dh</span> <span class="o">+</span> <span class="n">dw</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="n">variation</span><span class="p">:</span> <span class="n">GoProMediaDownloadVariation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">height_delta_sq</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">0</span> <span class="k">if</span> <span class="n">target_height</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">variation</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">target_height</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="n">width_delta_sq</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">0</span> <span class="k">if</span> <span class="n">target_width</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">variation</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">target_width</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">height_delta_sq</span> <span class="o">+</span> <span class="n">width_delta_sq</span>
 
-    <span class="n">best_score</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variations</span><span class="p">)</span>
-    <span class="n">tied</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variations</span> <span class="k">if</span> <span class="n">score</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="n">best_score</span><span class="p">]</span>
-    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">tied</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+    <span class="n">best_score</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">(</span><span class="n">variation</span><span class="p">)</span> <span class="k">for</span> <span class="n">variation</span> <span class="ow">in</span> <span class="n">variations</span><span class="p">)</span>
+    <span class="n">tied</span> <span class="o">=</span> <span class="p">[</span><span class="n">variation</span> <span class="k">for</span> <span class="n">variation</span> <span class="ow">in</span> <span class="n">variations</span> <span class="k">if</span> <span class="n">score</span><span class="p">(</span><span class="n">variation</span><span class="p">)</span> <span class="o">==</span> <span class="n">best_score</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">tied</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">variation</span><span class="p">:</span> <span class="p">(</span><span class="n">variation</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">variation</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -955,18 +1060,102 @@ dimensions; ties break toward the larger <code>(height, width)</code>.</p>
 <p>Example: <code>get_file_name("GX010001.MP4", 2)</code> → <code>"GX010001002.MP4"</code>.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>root_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Original media filename including extension.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>item_number</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Non-negative part index (three-digit zero padding).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Derived filename string.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/utils.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_file_name</span><span class="p">(</span><span class="n">root_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_file_name</span><span class="p">(</span><span class="n">root_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a part filename by inserting a zero-padded index before the extension.</span>
 
 <span class="sd">    Example: ``get_file_name(&quot;GX010001.MP4&quot;, 2)`` → ``&quot;GX010001002.MP4&quot;``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root_name: Original media filename including extension.</span>
+<span class="sd">        item_number: Non-negative part index (three-digit zero padding).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Derived filename string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">media_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">file_format</span> <span class="o">=</span> <span class="n">root_name</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">media_name</span><span class="si">}{</span><span class="nb">str</span><span class="p">(</span><span class="n">item_number</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">file_format</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -991,6 +1180,92 @@ dimensions; ties break toward the larger <code>(height, width)</code>.</p>
 <p>Video (<code>.mp4</code>): picks one variation via <code>select_video_variation</code>.
 Non-video: returns every file in <code>_embedded.files</code> in enumeration order
 (no <code>available</code> filtering, preserving CLI behaviour for burst sets).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>result</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadResponse" href="../models/#gopro_api.api.models.GoProMediaDownloadResponse">GoProMediaDownloadResponse</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed download-metadata response for one media id.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>target_height</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional preferred video height for variation scoring.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>target_width</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional preferred video width for variation scoring.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="gopro_api.utils.DownloadAsset">DownloadAsset</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mapping of local filename to downloadable file or variation row.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <p><span class="doc-section-title">Raises:</span></p>
@@ -1018,31 +1293,39 @@ Non-video: returns every file in <code>_embedded.files</code> in enumeration ord
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/utils.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pull_assets_for_response</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pull_assets_for_response</span><span class="p">(</span>
     <span class="n">result</span><span class="p">:</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">target_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1053,6 +1336,14 @@ Non-video: returns every file in <code>_embedded.files</code> in enumeration ord
 <span class="sd">    Video (``.mp4``): picks one variation via ``select_video_variation``.</span>
 <span class="sd">    Non-video: returns every file in ``_embedded.files`` in enumeration order</span>
 <span class="sd">    (no ``available`` filtering, preserving CLI behaviour for burst sets).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: Parsed download-metadata response for one media id.</span>
+<span class="sd">        target_height: Optional preferred video height for variation scoring.</span>
+<span class="sd">        target_width: Optional preferred video width for variation scoring.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Mapping of local filename to downloadable file or variation row.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        NoVariationsError: For video media when no variations are present.</span>
@@ -1084,18 +1375,104 @@ Non-video: returns every file in <code>_embedded.files</code> in enumeration ord
 
     <div class="doc doc-contents first">
 
-        <p>Write <code>data</code> to <code>path</code> (helper for <code>asyncio.to_thread</code>).</p>
+        <p>Write binary data to a path (blocking I/O).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Destination file path.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data</code>
+            </td>
+            <td>
+                  <code><span title="bytes">bytes</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Raw bytes to persist.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="OSError">OSError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the file cannot be opened or written.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/utils.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_bytes</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write ``data`` to ``path`` (helper for ``asyncio.to_thread``).&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_bytes</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write binary data to a path (blocking I/O).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path: Destination file path.</span>
+<span class="sd">        data: Raw bytes to persist.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        OSError: If the file cannot be opened or written.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+        <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

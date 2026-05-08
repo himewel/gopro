@@ -1075,80 +1075,138 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/gopro.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProAPI</span><span class="p">:</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProAPI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Synchronous client for ``https://api.gopro.com`` (Quik / cloud library).</span>
 
 <span class="sd">    Use as a context manager so a ``requests.Session`` is created and closed</span>
@@ -1159,8 +1217,10 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a sync client.</span>
 
-<span class="sd">        ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.</span>
-<span class="sd">        ``timeout``: per-request timeout in seconds.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            access_token: ``gp_access_token`` cookie value; defaults to</span>
+<span class="sd">                ``gopro_api.config.GP_ACCESS_TOKEN``.</span>
+<span class="sd">            timeout: Per-request timeout in seconds passed to ``requests``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">access_token</span> <span class="ow">or</span> <span class="n">GP_ACCESS_TOKEN</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
@@ -1168,36 +1228,77 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">base_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;API origin (``https://api.gopro.com``).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;HTTPS origin for API requests.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Always ``https://api.gopro.com``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;https://api.gopro.com&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build ``Cookie`` and ``Accept`` headers for an API call.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build headers for a JSON API request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            accept: Full ``Accept`` header value (vendor MIME type + version).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping with ``Cookie`` (token) and ``Accept``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;Cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;gp_access_token=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span>
             <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="n">accept</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GoProAPI&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open a ``requests.Session`` for the duration of the ``with`` block.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open a ``requests.Session`` for the duration of the ``with`` block.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``self`` for use inside the ``with`` body.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the session.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the session and clear internal state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *exc: Exception info from the interpreter (ignored).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_session_or_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the active session or raise if used outside a context manager.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the active ``requests.Session``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The session opened in ``__enter__``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If called before ``__enter__`` or after ``__exit__``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Use GoProAPI as a context manager: with GoProAPI() as api: ...&quot;</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``GET /media/{media_id}/download`` — metadata and CDN URLs for files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return download metadata and CDN URLs for one media item.</span>
+
+<span class="sd">        Calls ``GET /media/{media_id}/download`` with the GoPro media JSON</span>
+<span class="sd">        vendor MIME type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            media_id: Cloud library identifier for the media item.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Parsed response (filenames, variations, embedded files, CDN URLs).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If used outside ``with GoProAPI() as api``.</span>
+<span class="sd">            requests.HTTPError: When the response status is not successful.</span>
+<span class="sd">            pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="s2">&quot;application/vnd.gopro.jk.media+json; version=2.0.0&quot;</span><span class="p">)</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_or_raise</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1209,7 +1310,22 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
         <span class="k">return</span> <span class="n">GoProMediaDownloadResponse</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">GoProMediaSearchParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaSearchResponse</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``GET /media/search`` using ``params.model_dump()`` as query string.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search media in the cloud library with structured query parameters.</span>
+
+<span class="sd">        Calls ``GET /media/search``; ``params.model_dump()`` is sent as the query</span>
+<span class="sd">        string after serialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            params: Search filters (capture range, pagination, fields, etc.).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Paginated search results and embedded media rows.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If used outside ``with GoProAPI() as api``.</span>
+<span class="sd">            requests.HTTPError: When the response status is not successful.</span>
+<span class="sd">            pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span>
             <span class="s2">&quot;application/vnd.gopro.jk.media.search+json; version=2.0.0&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1251,7 +1367,30 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
     <div class="doc doc-contents ">
 
-        <p>API origin (<code>https://api.gopro.com</code>).</p>
+        <p>HTTPS origin for API requests.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Always <code>https://api.gopro.com</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -1272,8 +1411,54 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
     <div class="doc doc-contents ">
 
         <p>Create a sync client.</p>
-<p><code>access_token</code>: cookie value; defaults to <code>GP_ACCESS_TOKEN</code>.
-<code>timeout</code>: per-request timeout in seconds.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>access_token</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>gp_access_token</code> cookie value; defaults to
+<code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>timeout</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Per-request timeout in seconds passed to <code>requests</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>10.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
@@ -1286,11 +1471,15 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a sync client.</span>
 
-<span class="sd">    ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.</span>
-<span class="sd">    ``timeout``: per-request timeout in seconds.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        access_token: ``gp_access_token`` cookie value; defaults to</span>
+<span class="sd">            ``gopro_api.config.GP_ACCESS_TOKEN``.</span>
+<span class="sd">        timeout: Per-request timeout in seconds passed to ``requests``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">access_token</span> <span class="ow">or</span> <span class="n">GP_ACCESS_TOKEN</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
@@ -1312,18 +1501,86 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
     <div class="doc doc-contents ">
 
-        <p>Build <code>Cookie</code> and <code>Accept</code> headers for an API call.</p>
+        <p>Build headers for a JSON API request.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>accept</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Full <code>Accept</code> header value (vendor MIME type + version).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mapping with <code>Cookie</code> (token) and <code>Accept</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build ``Cookie`` and ``Accept`` headers for an API call.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build headers for a JSON API request.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        accept: Full ``Accept`` header value (vendor MIME type + version).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Mapping with ``Cookie`` (token) and ``Accept``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;gp_access_token=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span>
         <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="n">accept</span><span class="p">,</span>
@@ -1348,13 +1605,44 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
         <p>Open a <code>requests.Session</code> for the duration of the <code>with</code> block.</p>
 
 
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.gopro.GoProAPI" href="#gopro_api.api.gopro.GoProAPI">GoProAPI</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>self</code> for use inside the <code>with</code> body.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GoProAPI&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a ``requests.Session`` for the duration of the ``with`` block.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GoProAPI&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a ``requests.Session`` for the duration of the ``with`` block.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``self`` for use inside the ``with`` body.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
@@ -1374,17 +1662,56 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
     <div class="doc doc-contents ">
 
-        <p>Close the session.</p>
+        <p>Close the session and clear internal state.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>*exc</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Exception info from the interpreter (ignored).</p>
+              </div>
+            </td>
+            <td>
+                  <code>()</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the session.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the session and clear internal state.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *exc: Exception info from the interpreter (ignored).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1405,23 +1732,152 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
     <div class="doc doc-contents ">
 
-        <p><code>GET /media/{media_id}/download</code> — metadata and CDN URLs for files.</p>
+        <p>Return download metadata and CDN URLs for one media item.</p>
+<p>Calls <code>GET /media/{media_id}/download</code> with the GoPro media JSON
+vendor MIME type.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>media_id</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cloud library identifier for the media item.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadResponse" href="../models/#gopro_api.api.models.GoProMediaDownloadResponse">GoProMediaDownloadResponse</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed response (filenames, variations, embedded files, CDN URLs).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If used outside <code>with GoProAPI() as api</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="requests.HTTPError">HTTPError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>When the response status is not successful.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pydantic.ValidationError">ValidationError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the JSON body does not match the model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``GET /media/{media_id}/download`` — metadata and CDN URLs for files.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return download metadata and CDN URLs for one media item.</span>
+
+<span class="sd">    Calls ``GET /media/{media_id}/download`` with the GoPro media JSON</span>
+<span class="sd">    vendor MIME type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        media_id: Cloud library identifier for the media item.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Parsed response (filenames, variations, embedded files, CDN URLs).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If used outside ``with GoProAPI() as api``.</span>
+<span class="sd">        requests.HTTPError: When the response status is not successful.</span>
+<span class="sd">        pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="s2">&quot;application/vnd.gopro.jk.media+json; version=2.0.0&quot;</span><span class="p">)</span>
     <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_or_raise</span><span class="p">()</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1448,26 +1904,155 @@ around <code>search</code> and <code>download</code>. Pass <code>access_token</c
 
     <div class="doc doc-contents ">
 
-        <p><code>GET /media/search</code> using <code>params.model_dump()</code> as query string.</p>
+        <p>Search media in the cloud library with structured query parameters.</p>
+<p>Calls <code>GET /media/search</code>; <code>params.model_dump()</code> is sent as the query
+string after serialization.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>params</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchParams" href="../models/#gopro_api.api.models.GoProMediaSearchParams">GoProMediaSearchParams</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Search filters (capture range, pagination, fields, etc.).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchResponse" href="../models/#gopro_api.api.models.GoProMediaSearchResponse">GoProMediaSearchResponse</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Paginated search results and embedded media rows.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If used outside <code>with GoProAPI() as api</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="requests.HTTPError">HTTPError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>When the response status is not successful.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pydantic.ValidationError">ValidationError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the JSON body does not match the model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">GoProMediaSearchParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaSearchResponse</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``GET /media/search`` using ``params.model_dump()`` as query string.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">GoProMediaSearchParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaSearchResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search media in the cloud library with structured query parameters.</span>
+
+<span class="sd">    Calls ``GET /media/search``; ``params.model_dump()`` is sent as the query</span>
+<span class="sd">    string after serialization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        params: Search filters (capture range, pagination, fields, etc.).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Paginated search results and embedded media rows.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If used outside ``with GoProAPI() as api``.</span>
+<span class="sd">        requests.HTTPError: When the response status is not successful.</span>
+<span class="sd">        pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span>
         <span class="s2">&quot;application/vnd.gopro.jk.media.search+json; version=2.0.0&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -1524,87 +2109,145 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/async_gopro.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AsyncGoProAPI</span><span class="p">:</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AsyncGoProAPI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Async client for ``https://api.gopro.com`` (Quik / cloud library).</span>
 
 <span class="sd">    Use as an async context manager so an ``aiohttp.ClientSession`` is opened</span>
@@ -1615,8 +2258,10 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an async client.</span>
 
-<span class="sd">        ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.</span>
-<span class="sd">        ``timeout``: total HTTP client timeout in seconds.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            access_token: ``gp_access_token`` cookie value; defaults to</span>
+<span class="sd">                ``gopro_api.config.GP_ACCESS_TOKEN``.</span>
+<span class="sd">            timeout: Total client timeout in seconds for ``aiohttp``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">access_token</span> <span class="ow">or</span> <span class="n">GP_ACCESS_TOKEN</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientTimeout</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -1624,18 +2269,33 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">base_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;API origin (``https://api.gopro.com``).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;HTTPS origin for API requests.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Always ``https://api.gopro.com``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;https://api.gopro.com&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build ``Cookie`` and ``Accept`` headers for an API call.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build headers for a JSON API request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            accept: Full ``Accept`` header value (vendor MIME type + version).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping with ``Cookie`` (token) and ``Accept``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;Cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;gp_access_token=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span>
             <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="n">accept</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AsyncGoProAPI&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open an ``aiohttp.ClientSession`` for the ``async with`` body.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open an ``aiohttp.ClientSession`` for the ``async with`` body.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``self`` for use inside the ``async with`` body.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span>
             <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">,</span>
@@ -1643,13 +2303,24 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the session.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the session and clear internal state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *exc: Exception info from the interpreter (ignored).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_session_or_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the active session or raise if not inside ``async with``.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the active ``aiohttp.ClientSession``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The session opened in ``__aenter__``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If called before ``__aenter__`` or after ``__aexit__``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span>
         <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
@@ -1660,7 +2331,22 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
         <span class="k">return</span> <span class="n">session</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``GET /media/{media_id}/download`` — metadata and CDN URLs for files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return download metadata and CDN URLs for one media item.</span>
+
+<span class="sd">        Calls ``GET /media/{media_id}/download`` with the GoPro media JSON</span>
+<span class="sd">        vendor MIME type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            media_id: Cloud library identifier for the media item.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Parsed response (filenames, variations, embedded files, CDN URLs).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If used outside ``async with AsyncGoProAPI() as api``.</span>
+<span class="sd">            aiohttp.ClientResponseError: When ``raise_for_status`` fails.</span>
+<span class="sd">            pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="s2">&quot;application/vnd.gopro.jk.media+json; version=2.0.0&quot;</span><span class="p">)</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_or_raise</span><span class="p">()</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1672,7 +2358,22 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
         <span class="k">return</span> <span class="n">GoProMediaDownloadResponse</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">GoProMediaSearchParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaSearchResponse</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``GET /media/search`` using ``params.model_dump()`` as query string.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search media in the cloud library with structured query parameters.</span>
+
+<span class="sd">        Calls ``GET /media/search``; ``params.model_dump()`` is sent as the query</span>
+<span class="sd">        string after serialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            params: Search filters (capture range, pagination, fields, etc.).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Paginated search results and embedded media rows.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If used outside ``async with AsyncGoProAPI() as api``.</span>
+<span class="sd">            aiohttp.ClientResponseError: When ``raise_for_status`` fails.</span>
+<span class="sd">            pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span>
             <span class="s2">&quot;application/vnd.gopro.jk.media.search+json; version=2.0.0&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1714,7 +2415,30 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p>API origin (<code>https://api.gopro.com</code>).</p>
+        <p>HTTPS origin for API requests.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Always <code>https://api.gopro.com</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -1735,8 +2459,54 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
     <div class="doc doc-contents ">
 
         <p>Create an async client.</p>
-<p><code>access_token</code>: cookie value; defaults to <code>GP_ACCESS_TOKEN</code>.
-<code>timeout</code>: total HTTP client timeout in seconds.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>access_token</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>gp_access_token</code> cookie value; defaults to
+<code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>timeout</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Total client timeout in seconds for <code>aiohttp</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>10.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
@@ -1749,11 +2519,15 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an async client.</span>
 
-<span class="sd">    ``access_token``: cookie value; defaults to ``GP_ACCESS_TOKEN``.</span>
-<span class="sd">    ``timeout``: total HTTP client timeout in seconds.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        access_token: ``gp_access_token`` cookie value; defaults to</span>
+<span class="sd">            ``gopro_api.config.GP_ACCESS_TOKEN``.</span>
+<span class="sd">        timeout: Total client timeout in seconds for ``aiohttp``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">access_token</span> <span class="ow">or</span> <span class="n">GP_ACCESS_TOKEN</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientTimeout</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -1775,18 +2549,86 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Build <code>Cookie</code> and <code>Accept</code> headers for an API call.</p>
+        <p>Build headers for a JSON API request.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>accept</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Full <code>Accept</code> header value (vendor MIME type + version).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mapping with <code>Cookie</code> (token) and <code>Accept</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/async_gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build ``Cookie`` and ``Accept`` headers for an API call.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build headers for a JSON API request.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        accept: Full ``Accept`` header value (vendor MIME type + version).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Mapping with ``Cookie`` (token) and ``Accept``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;gp_access_token=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span>
         <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="n">accept</span><span class="p">,</span>
@@ -1815,16 +2657,47 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
         <p>Open an <code>aiohttp.ClientSession</code> for the <code>async with</code> body.</p>
 
 
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.async_gopro.AsyncGoProAPI" href="#gopro_api.api.async_gopro.AsyncGoProAPI">AsyncGoProAPI</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>self</code> for use inside the <code>async with</code> body.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/async_gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AsyncGoProAPI&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open an ``aiohttp.ClientSession`` for the ``async with`` body.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AsyncGoProAPI&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open an ``aiohttp.ClientSession`` for the ``async with`` body.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``self`` for use inside the ``async with`` body.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span>
         <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span>
         <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">,</span>
@@ -1851,17 +2724,56 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Close the session.</p>
+        <p>Close the session and clear internal state.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>*exc</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Exception info from the interpreter (ignored).</p>
+              </div>
+            </td>
+            <td>
+                  <code>()</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/async_gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the session.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the session and clear internal state.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *exc: Exception info from the interpreter (ignored).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1886,23 +2798,152 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p><code>GET /media/{media_id}/download</code> — metadata and CDN URLs for files.</p>
+        <p>Return download metadata and CDN URLs for one media item.</p>
+<p>Calls <code>GET /media/{media_id}/download</code> with the GoPro media JSON
+vendor MIME type.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>media_id</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cloud library identifier for the media item.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadResponse" href="../models/#gopro_api.api.models.GoProMediaDownloadResponse">GoProMediaDownloadResponse</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed response (filenames, variations, embedded files, CDN URLs).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If used outside <code>async with AsyncGoProAPI() as api</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="aiohttp.ClientResponseError">ClientResponseError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>When <code>raise_for_status</code> fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pydantic.ValidationError">ValidationError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the JSON body does not match the model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/async_gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``GET /media/{media_id}/download`` — metadata and CDN URLs for files.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaDownloadResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return download metadata and CDN URLs for one media item.</span>
+
+<span class="sd">    Calls ``GET /media/{media_id}/download`` with the GoPro media JSON</span>
+<span class="sd">    vendor MIME type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        media_id: Cloud library identifier for the media item.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Parsed response (filenames, variations, embedded files, CDN URLs).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If used outside ``async with AsyncGoProAPI() as api``.</span>
+<span class="sd">        aiohttp.ClientResponseError: When ``raise_for_status`` fails.</span>
+<span class="sd">        pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="s2">&quot;application/vnd.gopro.jk.media+json; version=2.0.0&quot;</span><span class="p">)</span>
     <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_or_raise</span><span class="p">()</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1933,26 +2974,155 @@ override <code>gopro_api.config.GP_ACCESS_TOKEN</code>.</p>
 
     <div class="doc doc-contents ">
 
-        <p><code>GET /media/search</code> using <code>params.model_dump()</code> as query string.</p>
+        <p>Search media in the cloud library with structured query parameters.</p>
+<p>Calls <code>GET /media/search</code>; <code>params.model_dump()</code> is sent as the query
+string after serialization.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>params</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchParams" href="../models/#gopro_api.api.models.GoProMediaSearchParams">GoProMediaSearchParams</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Search filters (capture range, pagination, fields, etc.).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchResponse" href="../models/#gopro_api.api.models.GoProMediaSearchResponse">GoProMediaSearchResponse</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Paginated search results and embedded media rows.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If used outside <code>async with AsyncGoProAPI() as api</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="aiohttp.ClientResponseError">ClientResponseError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>When <code>raise_for_status</code> fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pydantic.ValidationError">ValidationError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the JSON body does not match the model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>gopro_api/api/async_gopro.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">GoProMediaSearchParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaSearchResponse</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``GET /media/search`` using ``params.model_dump()`` as query string.&quot;&quot;&quot;</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">GoProMediaSearchParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GoProMediaSearchResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search media in the cloud library with structured query parameters.</span>
+
+<span class="sd">    Calls ``GET /media/search``; ``params.model_dump()`` is sent as the query</span>
+<span class="sd">    string after serialization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        params: Search filters (capture range, pagination, fields, etc.).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Paginated search results and embedded media rows.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If used outside ``async with AsyncGoProAPI() as api``.</span>
+<span class="sd">        aiohttp.ClientResponseError: When ``raise_for_status`` fails.</span>
+<span class="sd">        pydantic.ValidationError: If the JSON body does not match the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span>
         <span class="s2">&quot;application/vnd.gopro.jk.media.search+json; version=2.0.0&quot;</span><span class="p">,</span>
     <span class="p">)</span>

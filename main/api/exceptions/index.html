@@ -661,7 +661,9 @@
 
 
 
-        <p>Raised when no video variations are available for a media item.</p>
+        <p>Raised when video download metadata lists zero renditions.</p>
+<p>Typical cause: <code>_embedded.variations</code> is empty while the media filename
+is treated as video (for example <code>.mp4</code>).</p>
 
 
 
@@ -672,9 +674,17 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NoVariationsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when no video variations are available for a media item.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NoVariationsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when video download metadata lists zero renditions.</span>
+
+<span class="sd">    Typical cause: ``_embedded.variations`` is empty while the media filename</span>
+<span class="sd">    is treated as video (for example ``.mp4``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 

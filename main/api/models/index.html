@@ -929,7 +929,89 @@
 
 
 
-        <p>Query parameters for <code>GET /media/search</code> (lists as comma-separated values).</p>
+        <p>Query body for <code>GET /media/search</code>.</p>
+<p>List fields are serialized to comma-separated strings in the query string.
+Defaults match typical Quik / cloud library expectations.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchParams.processing_states">processing_states</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Allowed processing states filter.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchParams.fields">fields</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Columns to request for each media row.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchParams.type">type</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Media type filter.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchParams.captured_range">captured_range</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.CapturedRange" href="#gopro_api.api.models.CapturedRange">CapturedRange</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Capture time window.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchParams.page">page</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1-based page index.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchParams.per_page">per_page</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Page size.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -940,24 +1022,55 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query parameters for ``GET /media/search`` (lists as comma-separated values).&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query body for ``GET /media/search``.</span>
+
+<span class="sd">    List fields are serialized to comma-separated strings in the query string.</span>
+<span class="sd">    Defaults match typical Quik / cloud library expectations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        processing_states: Allowed processing states filter.</span>
+<span class="sd">        fields: Columns to request for each media row.</span>
+<span class="sd">        type: Media type filter.</span>
+<span class="sd">        captured_range: Capture time window.</span>
+<span class="sd">        page: 1-based page index.</span>
+<span class="sd">        per_page: Page size.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">processing_states</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_PROCESSING_STATES</span>
     <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_FIELDS</span>
@@ -971,7 +1084,14 @@
 
     <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;processing_states&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_csv_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Join list fields into one comma-separated string for the query.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Join list fields into one comma-separated string for the query.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: String sequence to join.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Single CSV fragment suitable for the query string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1014,7 +1134,45 @@
 
 
 
-        <p>Capture window for search; serialized to the API <code>captured_range</code> string.</p>
+        <p>Inclusive capture date window used in search queries.</p>
+<p>Serialized to a single <code>captured_range</code> query string with fixed
+<code>T00:00:00.000Z</code> suffixes, as required by the cloud API.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.CapturedRange.start">start</span></code></td>
+            <td>
+                  <code><span title="datetime.datetime">datetime</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Range start (date portion used in the wire format).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.CapturedRange.end">end</span></code></td>
+            <td>
+                  <code><span title="datetime.datetime">datetime</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Range end (date portion used in the wire format).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1037,15 +1195,39 @@
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CapturedRange</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capture window for search; serialized to the API ``captured_range`` string.&quot;&quot;&quot;</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CapturedRange</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inclusive capture date window used in search queries.</span>
+
+<span class="sd">    Serialized to a single ``captured_range`` query string with fixed</span>
+<span class="sd">    ``T00:00:00.000Z`` suffixes, as required by the cloud API.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        start: Range start (date portion used in the wire format).</span>
+<span class="sd">        end: Range end (date portion used in the wire format).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span>
     <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span>
 
     <span class="nd">@model_serializer</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_captured_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit the ``captured_range`` query fragment expected by the API.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize this range for the ``captured_range`` query parameter.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Comma-separated ISO date pair with ``Z`` UTC suffixes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">T00:00:00.000Z,&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">T00:00:00.000Z&quot;</span>
@@ -1094,6 +1276,42 @@
         <p>Top-level JSON body from <code>GET /media/search</code>.</p>
 
 
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchResponse.embedded">embedded</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchEmbedded" href="#gopro_api.api.models.GoProMediaSearchEmbedded">GoProMediaSearchEmbedded</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Media rows and errors (alias <code>_embedded</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchResponse.pages">pages</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchPages" href="#gopro_api.api.models.GoProMediaSearchPages">GoProMediaSearchPages</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pagination (alias <code>_pages</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
 
 
 
@@ -1102,14 +1320,24 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top-level JSON body from ``GET /media/search``.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top-level JSON body from ``GET /media/search``.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        embedded: Media rows and errors (alias ``_embedded``).</span>
+<span class="sd">        pages: Pagination (alias ``_pages``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1156,7 +1384,43 @@
 
 
 
-        <p><code>_embedded</code> object on a media search response.</p>
+        <p><code>_embedded</code> block for a search response (<code>_embedded</code> in JSON).</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchEmbedded.media">media</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaSearchItem" href="#gopro_api.api.models.GoProMediaSearchItem">GoProMediaSearchItem</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Result rows for the current page.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchEmbedded.errors">errors</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="typing.Any">Any</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Non-fatal API warnings or error objects.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1167,14 +1431,24 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchEmbedded</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``_embedded`` object on a media search response.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchEmbedded</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;``_embedded`` block for a search response (``_embedded`` in JSON).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        media: Result rows for the current page.</span>
+<span class="sd">        errors: Non-fatal API warnings or error objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
@@ -1221,7 +1495,65 @@
 
 
 
-        <p>Pagination block <code>_pages</code> on a media search response.</p>
+        <p>Pagination metadata (<code>_pages</code> in JSON).</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchPages.current_page">current_page</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Active 1-based page.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchPages.per_page">per_page</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Requested page size.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchPages.total_items">total_items</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Total rows matching the query.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchPages.total_pages">total_pages</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Total pages available.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1232,14 +1564,28 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchPages</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pagination block ``_pages`` on a media search response.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchPages</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pagination metadata (``_pages`` in JSON).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        current_page: Active 1-based page.</span>
+<span class="sd">        per_page: Requested page size.</span>
+<span class="sd">        total_items: Total rows matching the query.</span>
+<span class="sd">        total_pages: Total pages available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">per_page</span><span class="p">:</span> <span class="nb">int</span>
@@ -1286,7 +1632,154 @@
 
 
 
-        <p>Single item in <code>_embedded.media</code> from a media search response.</p>
+        <p>One media row from <code>GET /media/search</code>.</p>
+<p>Unknown JSON keys are retained via <code>extra="allow"</code> for forward compatibility.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.id">id</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cloud media identifier (used with <code>download</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.type">type</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Media kind (video, photo, burst, etc.).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.captured_at">captured_at</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="datetime.datetime">datetime</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Capture timestamp when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.filename">filename</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Primary filename when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.file_extension">file_extension</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Extension without dot when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.file_size">file_size</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Size in bytes when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.item_count">item_count</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parts in a burst/set when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.width">width</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pixel width when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.height">height</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pixel height when provided.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.gopro_user_id">gopro_user_id</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Owning user id from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.source_gumi">source_gumi</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Source identifier from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaSearchItem.source_mgumi">source_mgumi</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional secondary source id.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1297,24 +1790,58 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single item in ``_embedded.media`` from a media search response.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaSearchItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One media row from ``GET /media/search``.</span>
+
+<span class="sd">    Unknown JSON keys are retained via ``extra=&quot;allow&quot;`` for forward compatibility.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: Cloud media identifier (used with ``download``).</span>
+<span class="sd">        type: Media kind (video, photo, burst, etc.).</span>
+<span class="sd">        captured_at: Capture timestamp when provided.</span>
+<span class="sd">        filename: Primary filename when provided.</span>
+<span class="sd">        file_extension: Extension without dot when provided.</span>
+<span class="sd">        file_size: Size in bytes when provided.</span>
+<span class="sd">        item_count: Parts in a burst/set when provided.</span>
+<span class="sd">        width: Pixel width when provided.</span>
+<span class="sd">        height: Pixel height when provided.</span>
+<span class="sd">        gopro_user_id: Owning user id from the API.</span>
+<span class="sd">        source_gumi: Source identifier from the API.</span>
+<span class="sd">        source_mgumi: Optional secondary source id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
@@ -1375,6 +1902,42 @@
         <p>Top-level JSON body from <code>GET /media/{id}/download</code>.</p>
 
 
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadResponse.filename">filename</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Primary media filename from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadResponse.embedded">embedded</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadEmbedded" href="#gopro_api.api.models.GoProMediaDownloadEmbedded">GoProMediaDownloadEmbedded</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Nested files, variations, and sidecars (alias <code>_embedded</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
 
 
 
@@ -1383,14 +1946,24 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top-level JSON body from ``GET /media/{id}/download``.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top-level JSON body from ``GET /media/{id}/download``.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        filename: Primary media filename from the API.</span>
+<span class="sd">        embedded: Nested files, variations, and sidecars (alias ``_embedded``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1437,7 +2010,65 @@
 
 
 
-        <p><code>_embedded</code> on a media download metadata response.</p>
+        <p>Payload nested under <code>_embedded</code> for download metadata.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadEmbedded.files">files</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadFile" href="#gopro_api.api.models.GoProMediaDownloadFile">GoProMediaDownloadFile</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Non-video / multi-part files.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadEmbedded.variations">variations</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadVariation" href="#gopro_api.api.models.GoProMediaDownloadVariation">GoProMediaDownloadVariation</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Video renditions.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadEmbedded.sprites">sprites</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="typing.Any">Any</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sprite sheet metadata (structure varies).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadEmbedded.sidecar_files">sidecar_files</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="gopro_api.api.models.GoProMediaDownloadSidecarFile" href="#gopro_api.api.models.GoProMediaDownloadSidecarFile">GoProMediaDownloadSidecarFile</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional downloadable bundles.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1448,16 +2079,30 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadEmbedded</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``_embedded`` on a media download metadata response.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadEmbedded</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Payload nested under ``_embedded`` for download metadata.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        files: Non-video / multi-part files.</span>
+<span class="sd">        variations: Video renditions.</span>
+<span class="sd">        sprites: Sprite sheet metadata (structure varies).</span>
+<span class="sd">        sidecar_files: Additional downloadable bundles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
@@ -1506,7 +2151,109 @@
 
 
 
-        <p>Rendered size / quality variant in <code>_embedded.variations</code>.</p>
+        <p>Video rendition (resolution / quality) with a CDN URL.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.url">url</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>HTTPS URL for this rendition.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.head">head</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>API-specific head token.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.width">width</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pixel width.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.height">height</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pixel height.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.label">label</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Human-readable label from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.type">type</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rendition type string from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.quality">quality</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Quality bucket from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadVariation.available">available</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether the rendition is listed as fetchable.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1517,20 +2264,42 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadVariation</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rendered size / quality variant in ``_embedded.variations``.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadVariation</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Video rendition (resolution / quality) with a CDN URL.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        url: HTTPS URL for this rendition.</span>
+<span class="sd">        head: API-specific head token.</span>
+<span class="sd">        width: Pixel width.</span>
+<span class="sd">        height: Pixel height.</span>
+<span class="sd">        label: Human-readable label from the API.</span>
+<span class="sd">        type: Rendition type string from the API.</span>
+<span class="sd">        quality: Quality bucket from the API.</span>
+<span class="sd">        available: Whether the rendition is listed as fetchable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
@@ -1583,7 +2352,109 @@
 
 
 
-        <p>One downloadable file under <code>_embedded.files</code> from download metadata.</p>
+        <p>Non-video or burst member file with a CDN URL.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.url">url</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>HTTPS URL for this part.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.head">head</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>API-specific head token.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.camera_position">camera_position</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Camera slot label from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.item_number">item_number</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Part index within the set.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.width">width</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pixel width.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.height">height</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pixel height.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.orientation">orientation</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>EXIF-style orientation integer.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadFile.available">available</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether the asset is listed as fetchable.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1594,20 +2465,42 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadFile</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;One downloadable file under ``_embedded.files`` from download metadata.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadFile</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Non-video or burst member file with a CDN URL.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        url: HTTPS URL for this part.</span>
+<span class="sd">        head: API-specific head token.</span>
+<span class="sd">        camera_position: Camera slot label from the API.</span>
+<span class="sd">        item_number: Part index within the set.</span>
+<span class="sd">        width: Pixel width.</span>
+<span class="sd">        height: Pixel height.</span>
+<span class="sd">        orientation: EXIF-style orientation integer.</span>
+<span class="sd">        available: Whether the asset is listed as fetchable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
@@ -1660,7 +2553,87 @@
 
 
 
-        <p>Sidecar asset (e.g. zip) in <code>_embedded.sidecar_files</code>.</p>
+        <p>Auxiliary asset such as a ZIP sidecar.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadSidecarFile.url">url</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>HTTPS URL when available.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadSidecarFile.head">head</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>API-specific head token.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadSidecarFile.label">label</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Display label.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadSidecarFile.type">type</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Asset type string from the API.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadSidecarFile.fps">fps</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frames per second when applicable.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="gopro_api.api.models.GoProMediaDownloadSidecarFile.available">available</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether the asset is listed as fetchable.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1671,18 +2644,36 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>gopro_api/api/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadSidecarFile</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sidecar asset (e.g. zip) in ``_embedded.sidecar_files``.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GoProMediaDownloadSidecarFile</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Auxiliary asset such as a ZIP sidecar.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        url: HTTPS URL when available.</span>
+<span class="sd">        head: API-specific head token.</span>
+<span class="sd">        label: Display label.</span>
+<span class="sd">        type: Asset type string from the API.</span>
+<span class="sd">        fps: Frames per second when applicable.</span>
+<span class="sd">        available: Whether the asset is listed as fetchable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
