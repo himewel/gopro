@@ -2,18 +2,20 @@
 
 Command-line interface for `gopro-api`. Run `gopro-api --help` to see all subcommands.
 
-## Commands
-
-::: gopro_api.cli.SearchCommand
-
-::: gopro_api.cli.InfoCommand
-
-::: gopro_api.cli.PullCommand
-
-## Builder
-
-::: gopro_api.cli.CliBuilder
+Built with [Typer](https://typer.tiangolo.com/); the Typer application is exposed as `gopro_api.cli.app` for embedding or testing.
 
 ## Entry point
 
 ::: gopro_api.cli.main
+
+## Application
+
+::: gopro_api.cli.app
+
+## Commands
+
+::: gopro_api.cli.search_command
+
+::: gopro_api.cli.info_command
+
+::: gopro_api.cli.pull_command
