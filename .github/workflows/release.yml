@@ -86,6 +86,7 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             mike deploy --push "$GITHUB_REF_NAME"
           else
-            mike deploy --push latest
+            # "latest" is an alias in versions.json; deploy version "main" and move the alias (needs --update-aliases).
+            mike deploy --push --update-aliases main latest
             mike set-default --push latest
           fi
