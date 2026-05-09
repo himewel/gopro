@@ -202,7 +202,7 @@ List fields in search params are serialized to comma-separated strings when you 
 | `gopro_api/api/models.py` | Pydantic request/response models |
 | `gopro_api/api/__init__.py` | Re-exports `GoProAPI`, `AsyncGoProAPI` |
 | `gopro_api/config.py` | pydantic-settings `Settings`, `GP_ACCESS_TOKEN` |
-| `gopro_api/cli.py` | `gopro-api` CLI |
+| `gopro_api/cli/` | `gopro-api` CLI |
 | `setup.py` | Package metadata, dependencies, console entry point |
 
 ## CI and releases
