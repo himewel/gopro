@@ -2,30 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://himewel.github.io/gopro-api/main/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
     <url>
          <loc>https://himewel.github.io/gopro-api/main/api/api/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
     <url>
          <loc>https://himewel.github.io/gopro-api/main/api/cli/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
     <url>
          <loc>https://himewel.github.io/gopro-api/main/api/client/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
     <url>
          <loc>https://himewel.github.io/gopro-api/main/api/exceptions/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
     <url>
          <loc>https://himewel.github.io/gopro-api/main/api/models/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
     <url>
          <loc>https://himewel.github.io/gopro-api/main/api/utils/</loc>
-         <lastmod>2026-05-08</lastmod>
+         <lastmod>2026-05-09</lastmod>
     </url>
 </urlset>
