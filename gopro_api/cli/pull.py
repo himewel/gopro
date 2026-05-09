@@ -23,9 +23,24 @@ class PullPrinter:
     HEADERS = ["filename", "dim", "available", "url"]
 
     def __init__(self, console: Console | None = None) -> None:
+        """Initialize with an optional Rich console.
+
+        Args:
+            console: Console used for Rich output; a default soft-wrap console is
+                created when ``None``.
+        """
         self._console = console or Console(soft_wrap=True)
 
     def summary_cells(self, filename: str, asset: DownloadAsset) -> list[str]:
+        """Build row cells for a single download asset.
+
+        Args:
+            filename: Local filename that the asset will be saved as.
+            asset: Resolved download asset containing URL and dimensions.
+
+        Returns:
+            Ordered list of strings matching ``HEADERS``.
+        """
         return [
             filename,
             f"{asset.width}x{asset.height}",
@@ -34,6 +49,12 @@ class PullPrinter:
         ]
 
     def print_rich(self, assets: dict[str, DownloadAsset], destination: str) -> None:
+        """Print a Rich summary table of all assets to be downloaded.
+
+        Args:
+            assets: Mapping of local filename to resolved download asset.
+            destination: Target directory path shown in the header line.
+        """
         typer.secho(
             f"Pulling {len(assets)} file(s) to {destination}",
             bold=True,
@@ -44,6 +65,12 @@ class PullPrinter:
         self._console.print(table)
 
     def print_tsv(self, assets: dict[str, DownloadAsset], destination: str) -> None:
+        """Print a tab-separated summary of all assets for scripting.
+
+        Args:
+            assets: Mapping of local filename to resolved download asset.
+            destination: Target directory path shown in the comment header.
+        """
         typer.echo(f"# destination: {destination}")
         typer.echo("\t".join(self.HEADERS))
         for filename, asset in assets.items():
@@ -59,6 +86,19 @@ async def _run_pull(
     width: Optional[int],
     tsv: bool,
 ) -> None:
+    """Resolve assets for ``media_id``, print a summary, and download the files.
+
+    Args:
+        timeout: HTTP timeout in seconds passed to ``AsyncGoProClient``.
+        media_id: GoPro cloud media identifier.
+        destination: Local directory path where files will be saved.
+        height: Preferred variation height in pixels; ``None`` selects the tallest.
+        width: Preferred variation width in pixels; used when ``height`` is unset.
+        tsv: When ``True``, emit a tab-separated summary instead of a Rich table.
+
+    Raises:
+        typer.Exit: With code ``2`` if no variations are available for the media.
+    """
     _require_token()
     printer = PullPrinter()
     async with AsyncGoProClient(timeout=timeout) as client:
@@ -99,7 +139,7 @@ async def _run_pull(
         "--tsv for tab-separated)"
     ),
 )
-def pull_command(
+def pull_command(  # pylint: disable=too-many-positional-arguments
     ctx: typer.Context,
     media_id: str = typer.Argument(..., help="Media id from search"),
     destination: str = typer.Argument(..., help="Path to save the file"),

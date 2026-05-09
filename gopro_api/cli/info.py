@@ -29,9 +29,24 @@ class InfoPrinter:
     SIDECAR_HEADERS = ["idx", "label", "type", "fps", "available", "url"]
 
     def __init__(self, console: Console | None = None) -> None:
+        """Initialize with an optional Rich console.
+
+        Args:
+            console: Console used for Rich output; a default soft-wrap console is
+                created when ``None``.
+        """
         self._console = console or Console(soft_wrap=True)
 
     def variation_cells(self, idx: int, v: GoProMediaDownloadVariation) -> list[str]:
+        """Build row cells for a video variation entry.
+
+        Args:
+            idx: Zero-based row index shown in the ``idx`` column.
+            v: Variation object from the download metadata.
+
+        Returns:
+            Ordered list of strings matching ``VARIATION_HEADERS``.
+        """
         return [
             str(idx),
             v.label,
@@ -43,6 +58,15 @@ class InfoPrinter:
         ]
 
     def file_cells(self, idx: int, f: GoProMediaDownloadFile) -> list[str]:
+        """Build row cells for a multi-lens file entry.
+
+        Args:
+            idx: Zero-based row index shown in the ``idx`` column.
+            f: File object from the download metadata.
+
+        Returns:
+            Ordered list of strings matching ``FILE_HEADERS``.
+        """
         return [
             str(idx),
             str(f.item_number),
@@ -53,6 +77,15 @@ class InfoPrinter:
         ]
 
     def sidecar_cells(self, idx: int, s: GoProMediaDownloadSidecarFile) -> list[str]:
+        """Build row cells for a sidecar file entry.
+
+        Args:
+            idx: Zero-based row index shown in the ``idx`` column.
+            s: Sidecar file object from the download metadata.
+
+        Returns:
+            Ordered list of strings matching ``SIDECAR_HEADERS``.
+        """
         return [
             str(idx),
             s.label,
@@ -63,6 +96,11 @@ class InfoPrinter:
         ]
 
     def print_rich(self, meta: GoProMediaDownloadResponse) -> None:
+        """Print a Rich table of variations or files, plus sidecars when present.
+
+        Args:
+            meta: Download metadata response from the GoPro API.
+        """
         typer.secho(meta.filename, bold=True)
         if is_video_filename(meta.filename):
             table = _build_basic_table(self.VARIATION_HEADERS)
@@ -81,6 +119,11 @@ class InfoPrinter:
             self._console.print(sidecars)
 
     def print_tsv(self, meta: GoProMediaDownloadResponse) -> None:
+        """Print tab-separated rows of variations or files, plus sidecars when present.
+
+        Args:
+            meta: Download metadata response from the GoPro API.
+        """
         typer.echo(f"# filename: {meta.filename}")
         if is_video_filename(meta.filename):
             typer.echo("\t".join(self.VARIATION_HEADERS))
@@ -104,6 +147,14 @@ async def _run_info(
     json_out: bool,
     tsv: bool,
 ) -> None:
+    """Fetch download metadata for ``media_id`` and render the output.
+
+    Args:
+        timeout: HTTP timeout in seconds passed to ``AsyncGoProClient``.
+        media_id: GoPro cloud media identifier.
+        json_out: When ``True``, emit raw API JSON instead of a table.
+        tsv: When ``True``, emit tab-separated values instead of a Rich table.
+    """
     _require_token()
     async with AsyncGoProClient(timeout=timeout) as client:
         meta = await client.download(media_id)

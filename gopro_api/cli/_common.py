@@ -19,6 +19,14 @@ _FIELD_LABELS: dict[str, str] = {
 
 
 def _renamed_field(name: str) -> str:
+    """Return the display label for an API field name.
+
+    Args:
+        name: Internal API field name.
+
+    Returns:
+        Human-readable column label, or ``name`` unchanged when no mapping exists.
+    """
     return _FIELD_LABELS.get(name, name)
 
 
@@ -58,6 +66,18 @@ def _parse_dt(raw: str) -> datetime:
 
 
 def _validate_positive_px(value: Optional[int], flag: str) -> Optional[int]:
+    """Validate that a pixel dimension option is a positive integer.
+
+    Args:
+        value: The integer provided by the user, or ``None`` if omitted.
+        flag: CLI flag name shown in the error message (e.g. ``"--height"``).
+
+    Returns:
+        The validated value, or ``None`` when not provided.
+
+    Raises:
+        typer.BadParameter: If ``value`` is zero or negative.
+    """
     if value is None:
         return None
     if value <= 0:
@@ -68,6 +88,16 @@ def _validate_positive_px(value: Optional[int], flag: str) -> Optional[int]:
 def _build_basic_table(
     headers: list[str], *, fold_cols: tuple[str, ...] = ("url",)
 ) -> Table:
+    """Build a Rich Table with the given column headers.
+
+    Args:
+        headers: Ordered list of column names to add.
+        fold_cols: Column names that should use ``overflow="fold"``; defaults to
+            ``("url",)`` so long URLs wrap inside their cell.
+
+    Returns:
+        A ``rich.table.Table`` ready for row insertion.
+    """
     table = Table(show_header=True, header_style="bold")
     for h in headers:
         if h in fold_cols:
@@ -78,4 +108,12 @@ def _build_basic_table(
 
 
 def _yes_no(value: bool) -> str:
+    """Format a boolean as a human-readable string.
+
+    Args:
+        value: Boolean to format.
+
+    Returns:
+        ``"yes"`` when ``True``, ``"no"`` when ``False``.
+    """
     return "yes" if value else "no"

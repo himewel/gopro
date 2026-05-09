@@ -7,7 +7,6 @@ from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_serializer
 
-
 DEFAULT_PROCESSING_STATES: List[str] = [
     "rendering",
     "pretranscoding",

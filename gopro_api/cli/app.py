@@ -15,6 +15,11 @@ app = typer.Typer(
 
 
 def _version() -> str:
+    """Return the installed package version string.
+
+    Returns:
+        Version string from package metadata, or ``"0.0.0"`` when not installed.
+    """
     try:
         return package_version("gopro-api")
     except PackageNotFoundError:
@@ -22,6 +27,14 @@ def _version() -> str:
 
 
 def _version_callback(value: Optional[bool]) -> None:
+    """Print the package version and exit when ``--version`` is passed.
+
+    Args:
+        value: ``True`` when the ``--version`` flag is present; ``None`` otherwise.
+
+    Raises:
+        typer.Exit: Immediately after printing the version string.
+    """
     if value:
         typer.echo(f"gopro-api {_version()}")
         raise typer.Exit()
@@ -43,6 +56,13 @@ def _main_callback(
         help="Show version and exit.",
     ),
 ) -> None:
+    """Store shared CLI options in the Typer context for all subcommands.
+
+    Args:
+        ctx: Typer context used to pass ``timeout`` to subcommands.
+        timeout: HTTP timeout in seconds forwarded to ``AsyncGoProClient``.
+        show_version: Consumed by the eager ``--version`` callback before this runs.
+    """
     del show_version  # handled by eager callback (--version exits before commands)
     ctx.ensure_object(dict)
     ctx.obj["timeout"] = timeout

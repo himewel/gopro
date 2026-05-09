@@ -19,3 +19,11 @@ Built with [Typer](https://typer.tiangolo.com/); the Typer application is expose
 ::: gopro_api.cli.info_command
 
 ::: gopro_api.cli.pull_command
+
+## Printers
+
+::: gopro_api.cli.search.SearchPrinter
+
+::: gopro_api.cli.info.InfoPrinter
+
+::: gopro_api.cli.pull.PullPrinter
