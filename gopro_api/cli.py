@@ -5,16 +5,22 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-import sys
 from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version as package_version
 from typing import Optional
 
 import typer
+from rich.console import Console
+from rich.filesize import decimal as format_decimal_size
+from rich.table import Table
 
 from gopro_api.api.models import (
     DEFAULT_FIELDS,
     CapturedRange,
+    GoProMediaDownloadFile,
+    GoProMediaDownloadResponse,
+    GoProMediaDownloadSidecarFile,
+    GoProMediaDownloadVariation,
     GoProMediaSearchItem,
     GoProMediaSearchParams,
     GoProMediaSearchResponse,
@@ -22,7 +28,7 @@ from gopro_api.api.models import (
 from gopro_api.client import AsyncGoProClient
 from gopro_api.config import GP_ACCESS_TOKEN
 from gopro_api.exceptions import NoVariationsError
-from gopro_api.utils import is_video_filename, pull_assets_for_response
+from gopro_api.utils import DownloadAsset, is_video_filename, pull_assets_for_response
 
 app = typer.Typer(
     name="gopro-api",
@@ -98,23 +104,106 @@ def _require_token() -> None:
         typer.Exit: With code ``2`` if the token is missing.
     """
     if not GP_ACCESS_TOKEN:
-        typer.echo(
+        typer.secho(
             "error: GP_ACCESS_TOKEN is not set. "
             "Add it to your environment or a .env file.",
+            fg=typer.colors.RED,
+            bold=True,
             err=True,
         )
         raise typer.Exit(2)
 
 
-def _print_search_plain_header() -> None:
-    cols = list(DEFAULT_FIELDS)
-    print("\t".join(cols))
+def _search_item_cells(item: GoProMediaSearchItem) -> list[str]:
+    row = item.model_dump(mode="json")
+    return ["" if row.get(c) is None else str(row[c]) for c in DEFAULT_FIELDS]
+
+
+def _search_item_cells_rich(item: GoProMediaSearchItem) -> list[str]:
+    row = item.model_dump(mode="json")
+    cells: list[str] = []
+    for c in DEFAULT_FIELDS:
+        val = row.get(c)
+        if val is None:
+            cells.append("")
+        elif c == "file_size":
+            cells.append(format_decimal_size(int(val)))
+        else:
+            cells.append(str(val))
+    return cells
 
 
 def _format_search_item_plain(item: GoProMediaSearchItem) -> str:
-    row = item.model_dump(mode="json")
-    cells = ["" if row.get(c) is None else str(row[c]) for c in DEFAULT_FIELDS]
-    return "\t".join(cells)
+    return "\t".join(_search_item_cells(item))
+
+
+def _pages_meta_line(page_result: GoProMediaSearchResponse) -> str:
+    pages = page_result.pages
+    return (
+        f"# _pages: current_page={pages.current_page} per_page={pages.per_page} "
+        f"total_items={pages.total_items} total_pages={pages.total_pages}"
+    )
+
+
+def _emit_search_embedded_errors(page_result: GoProMediaSearchResponse) -> None:
+    if page_result.embedded.errors:
+        for err in page_result.embedded.errors:
+            typer.secho(
+                f"# _embedded.errors: {json.dumps(err, ensure_ascii=False)}",
+                fg=typer.colors.YELLOW,
+                err=True,
+            )
+
+
+_FIELD_LABELS: dict[str, str] = {
+    "type": "media",
+    "file_extension": "type",
+    "file_size": "size",
+    "item_count": "items",
+}
+
+
+def _renamed_field(name: str) -> str:
+    return _FIELD_LABELS.get(name, name)
+
+
+def _rename_media_item_keys(item: dict) -> dict:
+    return {_renamed_field(k): v for k, v in item.items()}
+
+
+def _rename_search_payload(payload: dict) -> dict:
+    embedded = payload.get("_embedded")
+    if isinstance(embedded, dict):
+        media = embedded.get("media")
+        if isinstance(media, list):
+            embedded["media"] = [
+                _rename_media_item_keys(it) if isinstance(it, dict) else it
+                for it in media
+            ]
+    return payload
+
+
+def _make_search_table() -> Table:
+    table = Table(show_header=True, header_style="bold")
+    for name in DEFAULT_FIELDS:
+        col_kw: dict = {}
+        if name == "filename":
+            col_kw["overflow"] = "ellipsis"
+            col_kw["max_width"] = 40
+        elif name == "captured_at":
+            col_kw["overflow"] = "ellipsis"
+            col_kw["max_width"] = 28
+        elif name == "id":
+            col_kw["overflow"] = "fold"
+        elif name == "type":
+            col_kw["overflow"] = "ellipsis"
+            col_kw["max_width"] = 14
+        table.add_column(_renamed_field(name), **col_kw)
+    return table
+
+
+def _print_search_plain_header() -> None:
+    typer.echo("\t".join(_renamed_field(c) for c in DEFAULT_FIELDS))
 
 
 def _print_search_plain_page(
@@ -122,21 +211,27 @@ def _print_search_plain_page(
     *,
     print_header: bool = True,
 ) -> None:
-    pages = page_result.pages
-    print(
-        f"# _pages: current_page={pages.current_page} per_page={pages.per_page} "
-        f"total_items={pages.total_items} total_pages={pages.total_pages}",
-    )
-    if page_result.embedded.errors:
-        for err in page_result.embedded.errors:
-            print(
-                f"# _embedded.errors: {json.dumps(err, ensure_ascii=False)}",
-                file=sys.stderr,
-            )
+    typer.echo(_pages_meta_line(page_result))
+    _emit_search_embedded_errors(page_result)
     if print_header:
         _print_search_plain_header()
     for item in page_result.embedded.media:
-        print(_format_search_item_plain(item))
+        typer.echo(_format_search_item_plain(item))
+
+
+def _print_search_rich_page(page_result: GoProMediaSearchResponse) -> None:
+    _emit_search_embedded_errors(page_result)
+    typer.echo(_pages_meta_line(page_result))
+    table = _make_search_table()
+    for item in page_result.embedded.media:
+        table.add_row(*_search_item_cells_rich(item))
+    Console(soft_wrap=True).print(table)
+
+
+def _append_search_rich_rows(table: Table, page_result: GoProMediaSearchResponse) -> None:
+    _emit_search_embedded_errors(page_result)
+    for item in page_result.embedded.media:
+        table.add_row(*_search_item_cells_rich(item))
 
 
 async def _run_search(
@@ -148,6 +243,7 @@ async def _run_search(
     per_page: int,
     all_pages: bool,
     json_out: bool,
+    tsv: bool,
 ) -> None:
     _require_token()
     start_dt = _parse_dt(start)
@@ -157,24 +253,36 @@ async def _run_search(
         if all_pages:
             all_pages_payload: list[dict] = []
             first_plain_page = True
+            rich_table: Optional[Table] = None
+            last_page: Optional[GoProMediaSearchResponse] = None
             async for page_result in client.iter_nonempty_search_pages(
                 start_dt,
                 end_dt,
                 per_page=per_page,
                 start_page=page,
             ):
+                last_page = page_result
                 if json_out:
                     all_pages_payload.append(
-                        page_result.model_dump(by_alias=True, mode="json"),
+                        _rename_search_payload(
+                            page_result.model_dump(by_alias=True, mode="json"),
+                        ),
                     )
-                else:
+                elif tsv:
                     _print_search_plain_page(
                         page_result,
                         print_header=first_plain_page,
                     )
                     first_plain_page = False
+                else:
+                    if rich_table is None:
+                        rich_table = _make_search_table()
+                    _append_search_rich_rows(rich_table, page_result)
             if json_out:
-                print(json.dumps(all_pages_payload, indent=2))
+                typer.echo(json.dumps(all_pages_payload, indent=2))
+            elif not tsv and rich_table is not None and last_page is not None:
+                typer.echo(_pages_meta_line(last_page))
+                Console(soft_wrap=True).print(rich_table)
             return
 
         params = GoProMediaSearchParams(
@@ -184,21 +292,25 @@ async def _run_search(
         )
         page_result = await client.search(params)
     if json_out:
-        print(
+        typer.echo(
             json.dumps(
-                page_result.model_dump(by_alias=True, mode="json"),
+                _rename_search_payload(
+                    page_result.model_dump(by_alias=True, mode="json"),
+                ),
                 indent=2,
             ),
         )
-    else:
+    elif tsv:
         _print_search_plain_page(page_result)
+    else:
+        _print_search_rich_page(page_result)
 
 
 @app.command(
     "search",
     help=(
-        "List media in a capture date range (tab-separated fields; "
-        "use --json for raw API payloads)"
+        "List media in a capture date range (Rich table by default; "
+        "--tsv for tab-separated fields; --json for raw API payloads)"
     ),
 )
 def search_command(
@@ -224,6 +336,11 @@ def search_command(
         "--all-pages",
         help="Keep requesting pages until a page returns no media",
     ),
+    tsv: bool = typer.Option(
+        False,
+        "--tsv",
+        help="Print tab-separated values (header row + metadata line) for scripting",
+    ),
     json_out: bool = typer.Option(
         False,
         "--json",
@@ -241,8 +358,99 @@ def search_command(
             per_page=per_page,
             all_pages=all_pages,
             json_out=json_out,
+            tsv=tsv,
         ),
     )
+
+
+_VARIATION_HEADERS = ["idx", "label", "quality", "type", "dim", "available", "url"]
+_FILE_HEADERS = ["idx", "item", "camera", "dim", "available", "url"]
+_SIDECAR_HEADERS = ["idx", "label", "type", "fps", "available", "url"]
+
+
+def _build_basic_table(headers: list[str], *, fold_cols: tuple[str, ...] = ("url",)) -> Table:
+    table = Table(show_header=True, header_style="bold")
+    for h in headers:
+        if h in fold_cols:
+            table.add_column(h, overflow="fold")
+        else:
+            table.add_column(h)
+    return table
+
+
+def _yes_no(value: bool) -> str:
+    return "yes" if value else "no"
+
+
+def _info_variation_cells(idx: int, v: GoProMediaDownloadVariation) -> list[str]:
+    return [
+        str(idx),
+        v.label,
+        v.quality,
+        v.type,
+        f"{v.width}x{v.height}",
+        _yes_no(v.available),
+        v.url,
+    ]
+
+
+def _info_file_cells(idx: int, f: GoProMediaDownloadFile) -> list[str]:
+    return [
+        str(idx),
+        str(f.item_number),
+        f.camera_position,
+        f"{f.width}x{f.height}",
+        _yes_no(f.available),
+        f.url,
+    ]
+
+
+def _info_sidecar_cells(idx: int, s: GoProMediaDownloadSidecarFile) -> list[str]:
+    return [
+        str(idx),
+        s.label,
+        s.type,
+        str(s.fps),
+        _yes_no(s.available),
+        s.url,
+    ]
+
+
+def _print_info_rich(meta: GoProMediaDownloadResponse) -> None:
+    typer.secho(meta.filename, bold=True)
+    console = Console(soft_wrap=True)
+    if is_video_filename(meta.filename):
+        table = _build_basic_table(_VARIATION_HEADERS)
+        for idx, v in enumerate(meta.embedded.variations):
+            table.add_row(*_info_variation_cells(idx, v))
+    else:
+        table = _build_basic_table(_FILE_HEADERS)
+        for idx, f in enumerate(meta.embedded.files):
+            table.add_row(*_info_file_cells(idx, f))
+    console.print(table)
+    if meta.embedded.sidecar_files:
+        typer.secho("sidecars", bold=True)
+        sidecars = _build_basic_table(_SIDECAR_HEADERS)
+        for idx, s in enumerate(meta.embedded.sidecar_files):
+            sidecars.add_row(*_info_sidecar_cells(idx, s))
+        console.print(sidecars)
+
+
+def _print_info_tsv(meta: GoProMediaDownloadResponse) -> None:
+    typer.echo(f"# filename: {meta.filename}")
+    if is_video_filename(meta.filename):
+        typer.echo("\t".join(_VARIATION_HEADERS))
+        for idx, v in enumerate(meta.embedded.variations):
+            typer.echo("\t".join(_info_variation_cells(idx, v)))
+    else:
+        typer.echo("\t".join(_FILE_HEADERS))
+        for idx, f in enumerate(meta.embedded.files):
+            typer.echo("\t".join(_info_file_cells(idx, f)))
+    if meta.embedded.sidecar_files:
+        typer.echo("# sidecars")
+        typer.echo("\t".join(_SIDECAR_HEADERS))
+        for idx, s in enumerate(meta.embedded.sidecar_files):
+            typer.echo("\t".join(_info_sidecar_cells(idx, s)))
 
 
 async def _run_info(
@@ -250,41 +458,80 @@ async def _run_info(
     timeout: float,
     media_id: str,
     json_out: bool,
+    tsv: bool,
 ) -> None:
     _require_token()
     async with AsyncGoProClient(timeout=timeout) as client:
         meta = await client.download(media_id)
     if json_out:
-        print(
+        typer.echo(
             json.dumps(
                 meta.model_dump(by_alias=True, mode="json"),
                 indent=2,
             ),
         )
+    elif tsv:
+        _print_info_tsv(meta)
     else:
-        print(meta.filename)
-        media_list = (
-            meta.embedded.variations
-            if is_video_filename(meta.filename)
-            else meta.embedded.files
-        )
-        for idx, media_item in enumerate(media_list):
-            print(
-                f"  {idx:>3}  {media_item.width}x{media_item.height}  "
-                f"{media_item.url}",
-            )
+        _print_info_rich(meta)
 
 
-@app.command("info", help="Show download metadata (URLs, sizes) for one media id")
+@app.command(
+    "info",
+    help=(
+        "Show download metadata for one media id "
+        "(Rich table by default; --tsv for tab-separated; --json for raw API)"
+    ),
+)
 def info_command(
     ctx: typer.Context,
     media_id: str = typer.Argument(..., help="Media id from search"),
+    tsv: bool = typer.Option(
+        False,
+        "--tsv",
+        help="Print tab-separated values for scripting",
+    ),
     json_out: bool = typer.Option(False, "--json", help="Print full API JSON"),
 ) -> None:
     """Fetch and display download metadata for ``media_id``."""
     asyncio.run(
-        _run_info(timeout=ctx.obj["timeout"], media_id=media_id, json_out=json_out),
+        _run_info(
+            timeout=ctx.obj["timeout"],
+            media_id=media_id,
+            json_out=json_out,
+            tsv=tsv,
+        ),
     )
+
+
+_PULL_HEADERS = ["filename", "dim", "available", "url"]
+
+
+def _pull_summary_cells(filename: str, asset: DownloadAsset) -> list[str]:
+    return [
+        filename,
+        f"{asset.width}x{asset.height}",
+        _yes_no(asset.available),
+        asset.url,
+    ]
+
+
+def _print_pull_rich(assets: dict[str, DownloadAsset], destination: str) -> None:
+    typer.secho(
+        f"Pulling {len(assets)} file(s) to {destination}",
+        bold=True,
+    )
+    table = _build_basic_table(_PULL_HEADERS)
+    for filename, asset in assets.items():
+        table.add_row(*_pull_summary_cells(filename, asset))
+    Console(soft_wrap=True).print(table)
+
+
+def _print_pull_tsv(assets: dict[str, DownloadAsset], destination: str) -> None:
+    typer.echo(f"# destination: {destination}")
+    typer.echo("\t".join(_PULL_HEADERS))
+    for filename, asset in assets.items():
+        typer.echo("\t".join(_pull_summary_cells(filename, asset)))
 
 
 async def _run_pull(
@@ -294,6 +541,7 @@ async def _run_pull(
     destination: str,
     height: Optional[int],
     width: Optional[int],
+    tsv: bool,
 ) -> None:
     _require_token()
     async with AsyncGoProClient(timeout=timeout) as client:
@@ -305,8 +553,13 @@ async def _run_pull(
                 target_width=width,
             )
         except NoVariationsError as exc:
-            typer.echo(f"error: {exc}", err=True)
+            typer.secho(f"error: {exc}", fg=typer.colors.RED, bold=True, err=True)
             raise typer.Exit(2) from exc
+
+        if tsv:
+            _print_pull_tsv(assets, destination)
+        else:
+            _print_pull_rich(assets, destination)
 
         os.makedirs(destination, exist_ok=True)
         await asyncio.gather(
@@ -319,8 +572,16 @@ async def _run_pull(
             )
         )
 
+    typer.secho(f"Done. ({len(assets)} file(s))", fg=typer.colors.GREEN)
 
-@app.command("pull", help="Download files from a media id")
+
+@app.command(
+    "pull",
+    help=(
+        "Download files from a media id (prints a Rich summary by default; "
+        "--tsv for tab-separated)"
+    ),
+)
 def pull_command(
     ctx: typer.Context,
     media_id: str = typer.Argument(..., help="Media id from search"),
@@ -343,6 +604,11 @@ def pull_command(
             "(default: tallest)"
         ),
     ),
+    tsv: bool = typer.Option(
+        False,
+        "--tsv",
+        help="Print tab-separated summary instead of the Rich table",
+    ),
 ) -> None:
     """Download all resolved files for ``media_id`` into ``destination``."""
     height = _validate_positive_px(height, "--height")
@@ -354,6 +620,7 @@ def pull_command(
             destination=destination,
             height=height,
             width=width,
+            tsv=tsv,
         ),
     )
 
@@ -362,7 +629,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     """CLI entrypoint: parse ``argv`` and run the selected command.
 
     Args:
-        argv: Argument list (defaults to ``sys.argv[1:]`` when ``None``).
+        argv: Argument list (defaults to process arguments when ``None``).
     """
     app(args=argv)
 
